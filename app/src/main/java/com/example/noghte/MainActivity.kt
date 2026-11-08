@@ -11,14 +11,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLayoutDirection // ✅ اضافه شد
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.LayoutDirection // ✅ اضافه شد
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.sp
 import java.util.Locale
 
@@ -34,6 +39,7 @@ class MainActivity : ComponentActivity() {
         Locale.setDefault(locale)
         val config = Configuration()
         config.setLocale(locale)
+        @Suppress("DEPRECATION")
         baseContext.resources.updateConfiguration(config, baseContext.resources.displayMetrics)
 
         setContent {
@@ -62,7 +68,8 @@ fun AppNavigation(isAlreadyLoggedIn: Boolean) {
     val prefs = context.getSharedPreferences("NoghtePrefs", Context.MODE_PRIVATE)
     var currentScreen by remember { mutableStateOf(if (isAlreadyLoggedIn) "home" else "login") }
 
-    val changeLanguage = {
+    // ✅ مشکل اینجا با اضافه کردن () -> Unit حل شد
+    val changeLanguage: () -> Unit = {
         val currentLang = prefs.getString("APP_LANG", "fa")
         val newLang = if (currentLang == "fa") "en" else "fa"
         prefs.edit().putString("APP_LANG", newLang).apply()
@@ -71,6 +78,7 @@ fun AppNavigation(isAlreadyLoggedIn: Boolean) {
         Locale.setDefault(locale)
         val config = Configuration()
         config.setLocale(locale)
+        @Suppress("DEPRECATION")
         context.resources.updateConfiguration(config, context.resources.displayMetrics)
         
         (context as? ComponentActivity)?.recreate()
