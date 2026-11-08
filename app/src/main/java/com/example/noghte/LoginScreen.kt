@@ -24,15 +24,13 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onNavigateToPrivacy: () -> Unit
 ) {
-    // تم طلایی و مشکی (لوکس)
-    val primaryGold = Color(0xFFD4AF37) // رنگ طلایی
-    val darkBackground = Color(0xFF121212) // پس‌زمینه تیره
+    val primaryGold = Color(0xFFD4AF37)
+    val darkBackground = Color(0xFF121212)
     val textColor = Color.White
 
     var isLoading by remember { mutableStateOf(false) }
     var isChecked by remember { mutableStateOf(false) }
 
-    // انیمیشن بزرگ شدن لوگو در ابتدای ورود
     val scale = remember { Animatable(0.5f) }
     LaunchedEffect(Unit) {
         scale.animateTo(
@@ -63,7 +61,6 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // لوگو با انیمیشن
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -94,10 +91,9 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // دکمه ورود
             Button(
                 onClick = { isLoading = true },
-                enabled = !isLoading && isChecked, // فقط اگر تیک خورده باشد کار میکند
+                enabled = !isLoading && isChecked,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -126,7 +122,6 @@ fun LoginScreen(
             
             Spacer(modifier = Modifier.height(24.dp))
 
-            // بخش چک‌باکس و لینک قوانین
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
@@ -145,15 +140,19 @@ fun LoginScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // متن قوانین با قابلیت کلیک
+            // این بخش تغییر کرد تا دقیقاً در یک خط و وسط‌چین باشد
             Text(
                 text = stringResource(id = R.string.login_privacy_agree),
-                fontSize = 12.sp,
+                fontSize = 14.sp,
                 color = primaryGold,
                 textDecoration = TextDecoration.Underline,
-                modifier = Modifier.clickable { onNavigateToPrivacy() }
+                textAlign = TextAlign.Center,
+                maxLines = 1, // اجبار به ماندن در یک خط
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onNavigateToPrivacy() }
             )
         }
     }
