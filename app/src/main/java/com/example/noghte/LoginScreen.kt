@@ -23,7 +23,7 @@ import kotlinx.coroutines.delay
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onNavigateToPrivacy: () -> Unit,
-    onLanguageChange: () -> Unit // کالبک تغییر زبان
+    onLanguageChange: () -> Unit
 ) {
     val primaryGold = Color(0xFFD4AF37)
     val darkBackground = Color(0xFF121212)
@@ -56,7 +56,6 @@ fun LoginScreen(
         color = darkBackground
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // دکمه تغییر زبان در بالای صفحه
             TextButton(
                 onClick = onLanguageChange,
                 modifier = Modifier
