@@ -15,8 +15,7 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrivacyScreen(
-    onBackClick: () -> Unit,
-    onLanguageChange: () -> Unit
+    onBackClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -25,12 +24,6 @@ fun PrivacyScreen(
                 navigationIcon = {
                     TextButton(onClick = onBackClick) {
                         Text(text = stringResource(id = R.string.back_button), fontSize = 16.sp)
-                    }
-                },
-                actions = {
-                    // دکمه تغییر زبان
-                    TextButton(onClick = onLanguageChange) {
-                        Text(text = stringResource(id = R.string.change_language), fontSize = 14.sp)
                     }
                 }
             )
@@ -42,13 +35,13 @@ fun PrivacyScreen(
                 .padding(paddingValues)
                 .padding(24.dp)
                 .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.Start // شروع از سمت راست در حالت RTL
         ) {
             Text(
                 text = stringResource(id = R.string.terms_text),
                 fontSize = 15.sp,
-                textAlign = TextAlign.Start,
-                lineHeight = 26.sp
+                textAlign = TextAlign.Start, // راست‌چین شدن خودکار با RTL
+                lineHeight = 28.sp
             )
             Spacer(modifier = Modifier.height(32.dp))
         }
