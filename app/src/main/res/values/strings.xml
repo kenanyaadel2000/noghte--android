@@ -1,7 +1,11 @@
 <resources>
     <string name="app_name">نقطه</string>
-    <string name="login_subtitle">دسترسی امن به منابع</string>
-    <string name="login_button">ورود با نقطه</string>
-    <string name="login_privacy">با ورود، شما شرایط استفاده را می‌پذیرید.</string>
+    <string name="login_subtitle">دروازه امن شما به زیرساخت</string>
+    <string name="login_button">ورود به نقطه</string>
+    <string name="login_privacy_agree">با ورود، شما قوانین و شرایط استفاده را می‌پذیرید.</string>
+    <string name="terms_title">قوانین و شرایط</string>
+    <string name="terms_text">۱. دسترسی شما به منابع تحت نظارت است.\n۲. اطلاعات ورود شما به صورت امن ذخیره می‌شود.\n۳. هرگونه تلاش برای نفوذ غیرمجاز پیگرد قانونی دارد.\n\nبا کلیک بر روی دکمه بازگشت، موافقت خود را اعلام می‌کنید.</string>
+    <string name="agree_checkbox">قوانین را می‌پذیرم</string>
     <string name="home_placeholder">به نقطه خوش آمدید!</string>
+    <string name="back_button">بازگشت</string>
 </resources>
