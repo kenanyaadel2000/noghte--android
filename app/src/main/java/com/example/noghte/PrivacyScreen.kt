@@ -14,14 +14,23 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrivacyScreen(onBackClick: () -> Unit) {
+fun PrivacyScreen(
+    onBackClick: () -> Unit,
+    onLanguageChange: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(id = R.string.terms_title)) },
+                title = { Text(text = stringResource(id = R.string.terms_title), fontSize = 18.sp) },
                 navigationIcon = {
                     TextButton(onClick = onBackClick) {
                         Text(text = stringResource(id = R.string.back_button), fontSize = 16.sp)
+                    }
+                },
+                actions = {
+                    // دکمه تغییر زبان
+                    TextButton(onClick = onLanguageChange) {
+                        Text(text = stringResource(id = R.string.change_language), fontSize = 14.sp)
                     }
                 }
             )
@@ -37,9 +46,9 @@ fun PrivacyScreen(onBackClick: () -> Unit) {
         ) {
             Text(
                 text = stringResource(id = R.string.terms_text),
-                fontSize = 16.sp,
+                fontSize = 15.sp,
                 textAlign = TextAlign.Start,
-                lineHeight = 28.sp
+                lineHeight = 26.sp
             )
             Spacer(modifier = Modifier.height(32.dp))
         }
