@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">Noghte</string>
+    <string name="app_name">نقطه</string>
+    <string name="login_subtitle">دسترسی امن به منابع</string>
+    <string name="login_button">ورود با نقطه</string>
+    <string name="login_privacy">با ورود، شما شرایط استفاده را می‌پذیرید.</string>
+    <string name="home_placeholder">به نقطه خوش آمدید!</string>
 </resources>
