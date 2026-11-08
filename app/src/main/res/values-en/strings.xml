@@ -4,9 +4,9 @@
     <string name="login_button">Login to Noghte</string>
     <string name="login_privacy_agree">View Terms &amp; Conditions</string>
     <string name="terms_title">Terms &amp; Conditions</string>
-    <string name="terms_text">Welcome to the Noghte Security Platform. Please read the following terms carefully before logging in:\n\n1. Your access to all resources and infrastructure services is fully monitored 24/7.\n2. Your credentials and tokens are stored using advanced, fully encrypted security standards.\n3. Any attempt for unauthorized access, reverse engineering, or abuse of privileges will be subject to legal prosecution.\n4. You agree not to share your organization\'s confidential information in insecure environments.\n\nBy clicking the back button and logging in, you declare your agreement to these terms.</string>
+    <string name="terms_text">Welcome to the Noghte Security Platform. Please read the following terms carefully before logging in:\n\n1. Your access to all resources and infrastructure services is fully monitored 24/7.\n2. Your credentials and tokens are stored using advanced, fully encrypted security standards.\n3. Any attempt for unauthorized access, reverse engineering, or abuse of privileges will be subject to legal prosecution.\n4. You agree not to share your organization\'s confidential information in insecure environments.\n5. The use of automated tools (like bots or scripts) for data extraction is strictly prohibited.\n6. If you notice any suspicious activity, you must report it immediately to the security team.\n7. You are responsible for keeping your personal device safe from malware.\n8. Any modifications or tampering with the client code will result in permanent access denial.\n9. The platform reserves the right to block access in case of violations, without prior notice.\n10. By continuing the login process, you confirm that you fully understand these terms.\n\nBy clicking the back button and logging in, you declare your agreement to these terms.</string>
     <string name="agree_checkbox">I accept the terms</string>
     <string name="home_placeholder">Welcome to Noghte!</string>
     <string name="back_button">Back</string>
-    <string name="change_language">Change Language to Persian</string>
+    <string name="change_language">Change Language</string>
 </resources>
