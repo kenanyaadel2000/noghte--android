@@ -1,6 +1,7 @@
 package com.example.noghte
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,17 +18,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // خواندن وضعیت ورود از حافظه گوشی
         val prefs = getSharedPreferences("NoghtePrefs", Context.MODE_PRIVATE)
         val isLoggedIn = prefs.getBoolean("IS_LOGGED_IN", false)
+        val appLanguage = prefs.getString("APP_LANG", "fa") ?: "fa"
+        
+        // اعمال زبان قبل از لود شدن UI
+        val locale = Locale(appLanguage)
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.setLocale(locale)
+        baseContext.resources.updateConfiguration(config, baseContext.resources.displayMetrics)
 
         setContent {
-            // تم تیره با رنگ اصلی طلایی
             MaterialTheme(
                 colorScheme = darkColorScheme(
                     primary = Color(0xFFD4AF37),
@@ -47,35 +55,40 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation(isAlreadyLoggedIn: Boolean) {
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("NoghtePrefs", Context.MODE_PRIVATE)
-
-    // اگر قبلا لاگین کرده باشد، مستقیم میرود خانه
     var currentScreen by remember { mutableStateOf(if (isAlreadyLoggedIn) "home" else "login") }
 
     when (currentScreen) {
         "login" -> {
             LoginScreen(
                 onLoginSuccess = {
-                    // ذخیره وضعیت در حافظه که دفعه بعد لاگین را رد کند
                     prefs.edit().putBoolean("IS_LOGGED_IN", true).apply()
                     currentScreen = "home"
                 },
-                onNavigateToPrivacy = {
-                    currentScreen = "privacy"
-                }
+                onNavigateToPrivacy = { currentScreen = "privacy" }
             )
         }
         "privacy" -> {
             PrivacyScreen(
-                onBackClick = { currentScreen = "login" }
+                onBackClick = { currentScreen = "login" },
+                onLanguageChange = {
+                    // تغییر زبان و ری‌استارت کردن اکتیویتی برای اعمال تغییرات
+                    val currentLang = prefs.getString("APP_LANG", "fa")
+                    val newLang = if (currentLang == "fa") "en" else "fa"
+                    prefs.edit().putString("APP_LANG", newLang).apply()
+                    
+                    val locale = Locale(newLang)
+                    Locale.setDefault(locale)
+                    val config = Configuration()
+                    config.setLocale(locale)
+                    context.resources.updateConfiguration(config, context.resources.displayMetrics)
+                    
+                    (context as? ComponentActivity)?.recreate()
+                }
             )
         }
         "home" -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(
-                    text = stringResource(id = R.string.home_placeholder), 
-                    fontSize = 24.sp, 
-                    color = Color.White
-                )
+                Text(text = stringResource(id = R.string.home_placeholder), fontSize = 24.sp, color = Color.White)
             }
         }
     }
