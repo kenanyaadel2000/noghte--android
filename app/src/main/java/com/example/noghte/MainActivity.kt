@@ -16,10 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection // ✅ اضافه شد
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.LayoutDirection // ✅ اضافه شد
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.LayoutDirection
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
@@ -37,7 +37,6 @@ class MainActivity : ComponentActivity() {
         baseContext.resources.updateConfiguration(config, baseContext.resources.displayMetrics)
 
         setContent {
-            // تشخیص جهت چیدمان بر اساس زبان
             val layoutDirection = if (appLanguage == "fa") LayoutDirection.Rtl else LayoutDirection.Ltr
 
             CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
@@ -63,7 +62,6 @@ fun AppNavigation(isAlreadyLoggedIn: Boolean) {
     val prefs = context.getSharedPreferences("NoghtePrefs", Context.MODE_PRIVATE)
     var currentScreen by remember { mutableStateOf(if (isAlreadyLoggedIn) "home" else "login") }
 
-    // تابع تغییر زبان
     val changeLanguage = {
         val currentLang = prefs.getString("APP_LANG", "fa")
         val newLang = if (currentLang == "fa") "en" else "fa"
@@ -90,10 +88,7 @@ fun AppNavigation(isAlreadyLoggedIn: Boolean) {
             )
         }
         "privacy" -> {
-            PrivacyScreen(
-                onBackClick = { currentScreen = "login" }
-                // دکمه زبان از اینجا برداشته شد چون در لاگین گذاشتیم
-            )
+            PrivacyScreen(onBackClick = { currentScreen = "login" })
         }
         "home" -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
