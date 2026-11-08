@@ -18,6 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
@@ -28,7 +30,6 @@ class MainActivity : ComponentActivity() {
         val isLoggedIn = prefs.getBoolean("IS_LOGGED_IN", false)
         val appLanguage = prefs.getString("APP_LANG", "fa") ?: "fa"
         
-        // اعمال زبان قبل از لود شدن UI
         val locale = Locale(appLanguage)
         Locale.setDefault(locale)
         val config = Configuration()
@@ -36,15 +37,20 @@ class MainActivity : ComponentActivity() {
         baseContext.resources.updateConfiguration(config, baseContext.resources.displayMetrics)
 
         setContent {
-            MaterialTheme(
-                colorScheme = darkColorScheme(
-                    primary = Color(0xFFD4AF37),
-                    background = Color(0xFF121212),
-                    surface = Color(0xFF121212)
-                )
-            ) {
-                Surface {
-                    AppNavigation(isAlreadyLoggedIn = isLoggedIn)
+            // تشخیص جهت چیدمان بر اساس زبان
+            val layoutDirection = if (appLanguage == "fa") LayoutDirection.Rtl else LayoutDirection.Ltr
+
+            CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+                MaterialTheme(
+                    colorScheme = darkColorScheme(
+                        primary = Color(0xFFD4AF37),
+                        background = Color(0xFF121212),
+                        surface = Color(0xFF121212)
+                    )
+                ) {
+                    Surface {
+                        AppNavigation(isAlreadyLoggedIn = isLoggedIn)
+                    }
                 }
             }
         }
@@ -57,6 +63,21 @@ fun AppNavigation(isAlreadyLoggedIn: Boolean) {
     val prefs = context.getSharedPreferences("NoghtePrefs", Context.MODE_PRIVATE)
     var currentScreen by remember { mutableStateOf(if (isAlreadyLoggedIn) "home" else "login") }
 
+    // تابع تغییر زبان
+    val changeLanguage = {
+        val currentLang = prefs.getString("APP_LANG", "fa")
+        val newLang = if (currentLang == "fa") "en" else "fa"
+        prefs.edit().putString("APP_LANG", newLang).apply()
+        
+        val locale = Locale(newLang)
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.setLocale(locale)
+        context.resources.updateConfiguration(config, context.resources.displayMetrics)
+        
+        (context as? ComponentActivity)?.recreate()
+    }
+
     when (currentScreen) {
         "login" -> {
             LoginScreen(
@@ -64,26 +85,14 @@ fun AppNavigation(isAlreadyLoggedIn: Boolean) {
                     prefs.edit().putBoolean("IS_LOGGED_IN", true).apply()
                     currentScreen = "home"
                 },
-                onNavigateToPrivacy = { currentScreen = "privacy" }
+                onNavigateToPrivacy = { currentScreen = "privacy" },
+                onLanguageChange = changeLanguage
             )
         }
         "privacy" -> {
             PrivacyScreen(
-                onBackClick = { currentScreen = "login" },
-                onLanguageChange = {
-                    // تغییر زبان و ری‌استارت کردن اکتیویتی برای اعمال تغییرات
-                    val currentLang = prefs.getString("APP_LANG", "fa")
-                    val newLang = if (currentLang == "fa") "en" else "fa"
-                    prefs.edit().putString("APP_LANG", newLang).apply()
-                    
-                    val locale = Locale(newLang)
-                    Locale.setDefault(locale)
-                    val config = Configuration()
-                    config.setLocale(locale)
-                    context.resources.updateConfiguration(config, context.resources.displayMetrics)
-                    
-                    (context as? ComponentActivity)?.recreate()
-                }
+                onBackClick = { currentScreen = "login" }
+                // دکمه زبان از اینجا برداشته شد چون در لاگین گذاشتیم
             )
         }
         "home" -> {
