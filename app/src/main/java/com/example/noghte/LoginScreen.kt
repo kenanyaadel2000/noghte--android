@@ -22,7 +22,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
-    onNavigateToPrivacy: () -> Unit
+    onNavigateToPrivacy: () -> Unit,
+    onLanguageChange: () -> Unit // کالبک تغییر زبان
 ) {
     val primaryGold = Color(0xFFD4AF37)
     val darkBackground = Color(0xFF121212)
@@ -54,106 +55,121 @@ fun LoginScreen(
         modifier = Modifier.fillMaxSize(),
         color = darkBackground
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Box(
+        Box(modifier = Modifier.fillMaxSize()) {
+            // دکمه تغییر زبان در بالای صفحه
+            TextButton(
+                onClick = onLanguageChange,
                 modifier = Modifier
-                    .size(120.dp)
-                    .scale(scale.value)
-                    .background(color = primaryGold, shape = RoundedCornerShape(30.dp)),
-                contentAlignment = Alignment.Center
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
             ) {
-                Text(text = "🎯", fontSize = 60.sp)
+                Text(
+                    text = "🌐 " + stringResource(id = R.string.change_language),
+                    color = primaryGold,
+                    fontSize = 14.sp
+                )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = stringResource(id = R.string.app_name),
-                fontSize = 36.sp,
-                fontWeight = FontWeight.Bold,
-                color = primaryGold
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = stringResource(id = R.string.login_subtitle),
-                fontSize = 16.sp,
-                color = Color.LightGray,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(48.dp))
-
-            Button(
-                onClick = { isLoading = true },
-                enabled = !isLoading && isChecked,
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = primaryGold,
-                    contentColor = Color.Black,
-                    disabledContainerColor = Color.Gray.copy(alpha = 0.5f),
-                    disabledContentColor = Color.LightGray
-                ),
-                shape = RoundedCornerShape(12.dp)
+                    .fillMaxSize()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        color = Color.Black,
-                        modifier = Modifier.size(24.dp),
-                        strokeWidth = 2.dp
+                Box(
+                    modifier = Modifier
+                        .size(120.dp)
+                        .scale(scale.value)
+                        .background(color = primaryGold, shape = RoundedCornerShape(30.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "🎯", fontSize = 60.sp)
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = stringResource(id = R.string.app_name),
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = primaryGold
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = stringResource(id = R.string.login_subtitle),
+                    fontSize = 16.sp,
+                    color = Color.LightGray,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(48.dp))
+
+                Button(
+                    onClick = { isLoading = true },
+                    enabled = !isLoading && isChecked,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = primaryGold,
+                        contentColor = Color.Black,
+                        disabledContainerColor = Color.Gray.copy(alpha = 0.5f),
+                        disabledContentColor = Color.LightGray
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            color = Color.Black,
+                            modifier = Modifier.size(24.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(id = R.string.login_button),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Checkbox(
+                        checked = isChecked,
+                        onCheckedChange = { isChecked = it },
+                        colors = CheckboxDefaults.colors(checkedColor = primaryGold, uncheckedColor = Color.Gray)
                     )
-                } else {
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = stringResource(id = R.string.login_button),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
+                        text = stringResource(id = R.string.agree_checkbox),
+                        fontSize = 14.sp,
+                        color = textColor
                     )
                 }
-            }
-            
-            Spacer(modifier = Modifier.height(24.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Checkbox(
-                    checked = isChecked,
-                    onCheckedChange = { isChecked = it },
-                    colors = CheckboxDefaults.colors(checkedColor = primaryGold, uncheckedColor = Color.Gray)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+
                 Text(
-                    text = stringResource(id = R.string.agree_checkbox),
+                    text = stringResource(id = R.string.login_privacy_agree),
                     fontSize = 14.sp,
-                    color = textColor
+                    color = primaryGold,
+                    textDecoration = TextDecoration.Underline,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onNavigateToPrivacy() }
                 )
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // این بخش تغییر کرد تا دقیقاً در یک خط و وسط‌چین باشد
-            Text(
-                text = stringResource(id = R.string.login_privacy_agree),
-                fontSize = 14.sp,
-                color = primaryGold,
-                textDecoration = TextDecoration.Underline,
-                textAlign = TextAlign.Center,
-                maxLines = 1, // اجبار به ماندن در یک خط
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onNavigateToPrivacy() }
-            )
         }
     }
 }
