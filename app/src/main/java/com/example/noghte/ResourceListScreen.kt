@@ -1,6 +1,7 @@
 package com.example.noghte
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,7 +59,8 @@ import androidx.compose.ui.unit.sp
 fun ResourceListScreen(
     isDarkTheme: Boolean,
     onThemeChange: (Boolean) -> Unit,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    onResourceClick: (String) -> Unit // ✅ پارامتر جدید برای کلیک روی منبع
 ) {
     // گرفتن رنگ‌ها از تم فعلی (روشن یا تیره)
     val primaryColor = MaterialTheme.colorScheme.primary
@@ -86,7 +88,6 @@ fun ResourceListScreen(
                     IconButton(onClick = { /* TODO: Profile */ }) {
                         Icon(Icons.Default.AccountCircle, contentDescription = "Profile", tint = primaryColor)
                     }
-                    // ✅ دکمه تنظیمات برای رفتن به صفحه تغییر تم
                     IconButton(onClick = onNavigateToSettings) {
                         Icon(Icons.Default.Settings, contentDescription = "Settings", tint = primaryColor)
                     }
@@ -152,7 +153,8 @@ fun ResourceListScreen(
                                 resource = resource, 
                                 primaryColor = primaryColor, 
                                 surfaceColor = surfaceColor,
-                                textColor = textColor
+                                textColor = textColor,
+                                onClick = { onResourceClick(resource.id) } // ✅ پاس دادن ID به تابع
                             )
                         }
                     }
@@ -179,10 +181,13 @@ fun ResourceCard(
     resource: Resource, 
     primaryColor: Color, 
     surfaceColor: Color,
-    textColor: Color
+    textColor: Color,
+    onClick: () -> Unit // ✅ پارامتر جدید برای کلیک
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }, // ✅ کارت کلیک‌پذیر شد
         colors = CardDefaults.cardColors(containerColor = surfaceColor),
         shape = RoundedCornerShape(16.dp)
     ) {
