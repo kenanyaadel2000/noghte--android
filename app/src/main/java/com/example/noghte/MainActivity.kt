@@ -11,12 +11,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,18 +39,42 @@ class MainActivity : ComponentActivity() {
         baseContext.resources.updateConfiguration(config, baseContext.resources.displayMetrics)
 
         setContent {
+            // وضعیت تم (پیش‌فرض تیره است)
+            var isDarkTheme by remember { mutableStateOf(prefs.getBoolean("IS_DARK_THEME", true)) }
+
             val layoutDirection = if (appLanguage == "fa") LayoutDirection.Rtl else LayoutDirection.Ltr
+
+            // تعریف پالت رنگی تیره
+            val darkColors = darkColorScheme(
+                primary = Color(0xFFD4AF37),
+                background = Color(0xFF121212),
+                surface = Color(0xFF1E1E1E),
+                onBackground = Color.White,
+                onSurface = Color.White
+            )
+
+            // تعریف پالت رنگی روشن
+            val lightColors = lightColorScheme(
+                primary = Color(0xFFD4AF37),
+                background = Color(0xFFF9F9F9),
+                surface = Color.White,
+                onBackground = Color.Black,
+                onSurface = Color.Black
+            )
 
             CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
                 MaterialTheme(
-                    colorScheme = darkColorScheme(
-                        primary = Color(0xFFD4AF37),
-                        background = Color(0xFF121212),
-                        surface = Color(0xFF121212)
-                    )
+                    colorScheme = if (isDarkTheme) darkColors else lightColors
                 ) {
                     Surface {
-                        AppNavigation(isAlreadyLoggedIn = isLoggedIn)
+                        AppNavigation(
+                            isAlreadyLoggedIn = isLoggedIn,
+                            isDarkTheme = isDarkTheme,
+                            onThemeChange = { 
+                                isDarkTheme = it
+                                prefs.edit().putBoolean("IS_DARK_THEME", it).apply()
+                            }
+                        )
                     }
                 }
             }
@@ -63,7 +83,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppNavigation(isAlreadyLoggedIn: Boolean) {
+fun AppNavigation(
+    isAlreadyLoggedIn: Boolean,
+    isDarkTheme: Boolean,
+    onThemeChange: (Boolean) -> Unit
+) {
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("NoghtePrefs", Context.MODE_PRIVATE)
     var currentScreen by remember { mutableStateOf(if (isAlreadyLoggedIn) "home" else "login") }
@@ -86,6 +110,7 @@ fun AppNavigation(isAlreadyLoggedIn: Boolean) {
     when (currentScreen) {
         "login" -> {
             LoginScreen(
+                isDarkTheme = isDarkTheme, // پاس دادن وضعیت تم
                 onLoginSuccess = {
                     prefs.edit().putBoolean("IS_LOGGED_IN", true).apply()
                     currentScreen = "home"
@@ -98,8 +123,18 @@ fun AppNavigation(isAlreadyLoggedIn: Boolean) {
             PrivacyScreen(onBackClick = { currentScreen = "login" })
         }
         "home" -> {
-            // ✅ اینجا تغییر کرده و صفحه منابع صدا زده میشه
-            ResourceListScreen()
+            ResourceListScreen(
+                isDarkTheme = isDarkTheme,
+                onThemeChange = onThemeChange, // پاس دادن تابع تغییر تم
+                onNavigateToSettings = { currentScreen = "settings" }
+            )
+        }
+        "settings" -> {
+            SettingsScreen(
+                isDarkTheme = isDarkTheme,
+                onThemeChange = onThemeChange,
+                onBackClick = { currentScreen = "home" }
+            )
         }
     }
 }
