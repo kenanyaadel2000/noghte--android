@@ -18,4 +18,7 @@
     <string name="access_read">خواندن</string>
     <string name="access_full">دسترسی کامل</string>
     <string name="coming_soon">به زودی...</string>
+    <string name="settings_title">تنظیمات</string>
+    <string name="dark_mode">حالت تاریک (Dark Mode)</string>
+    <string name="light_mode">حالت روشن (Light Mode)</string>
 </resources>
