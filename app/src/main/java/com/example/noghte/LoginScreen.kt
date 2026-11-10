@@ -1,16 +1,43 @@
 package com.example.noghte
 
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.background
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -21,13 +48,15 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun LoginScreen(
+    isDarkTheme: Boolean, // دریافت وضعیت تم از MainActivity
     onLoginSuccess: () -> Unit,
     onNavigateToPrivacy: () -> Unit,
     onLanguageChange: () -> Unit
 ) {
-    val primaryGold = Color(0xFFD4AF37)
-    val darkBackground = Color(0xFF121212)
-    val textColor = Color.White
+    // استفاده از رنگ‌های تم برای هماهنگی با حالت روشن و تیره
+    val primaryGold = MaterialTheme.colorScheme.primary
+    val backgroundColor = MaterialTheme.colorScheme.background
+    val textColor = MaterialTheme.colorScheme.onBackground
 
     var isLoading by remember { mutableStateOf(false) }
     var isChecked by remember { mutableStateOf(false) }
@@ -53,9 +82,10 @@ fun LoginScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = darkBackground
+        color = backgroundColor
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
+            // دکمه تغییر زبان در بالای صفحه
             TextButton(
                 onClick = onLanguageChange,
                 modifier = Modifier
@@ -76,15 +106,15 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Box(
+                // لوگو که بر اساس تم (روشن/تیره) عکسش عوض میشه
+                Image(
+                    painter = painterResource(id = if (isDarkTheme) R.drawable.ic_logo_dark else R.drawable.ic_logo_light),
+                    contentDescription = "Noghte Logo",
                     modifier = Modifier
-                        .size(120.dp)
+                        .size(140.dp)
                         .scale(scale.value)
-                        .background(color = primaryGold, shape = RoundedCornerShape(30.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "🎯", fontSize = 60.sp)
-                }
+                        .clip(RoundedCornerShape(32.dp)) 
+                )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -100,7 +130,7 @@ fun LoginScreen(
                 Text(
                     text = stringResource(id = R.string.login_subtitle),
                     fontSize = 16.sp,
-                    color = Color.LightGray,
+                    color = textColor.copy(alpha = 0.7f), // کمی محو تر برای زیبایی
                     textAlign = TextAlign.Center
                 )
 
@@ -145,7 +175,10 @@ fun LoginScreen(
                     Checkbox(
                         checked = isChecked,
                         onCheckedChange = { isChecked = it },
-                        colors = CheckboxDefaults.colors(checkedColor = primaryGold, uncheckedColor = Color.Gray)
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = primaryGold, 
+                            uncheckedColor = textColor.copy(alpha = 0.5f)
+                        )
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
