@@ -91,6 +91,7 @@ fun AppNavigation(
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("NoghtePrefs", Context.MODE_PRIVATE)
     var currentScreen by remember { mutableStateOf(if (isAlreadyLoggedIn) "home" else "login") }
+    var selectedResourceId by remember { mutableStateOf<String?>(null) } // برای نگه داشتن ID منبع انتخاب شده
 
     val changeLanguage: () -> Unit = {
         val currentLang = prefs.getString("APP_LANG", "fa")
@@ -110,7 +111,7 @@ fun AppNavigation(
     when (currentScreen) {
         "login" -> {
             LoginScreen(
-                isDarkTheme = isDarkTheme, // پاس دادن وضعیت تم
+                isDarkTheme = isDarkTheme,
                 onLoginSuccess = {
                     prefs.edit().putBoolean("IS_LOGGED_IN", true).apply()
                     currentScreen = "home"
@@ -125,14 +126,24 @@ fun AppNavigation(
         "home" -> {
             ResourceListScreen(
                 isDarkTheme = isDarkTheme,
-                onThemeChange = onThemeChange, // پاس دادن تابع تغییر تم
-                onNavigateToSettings = { currentScreen = "settings" }
+                onThemeChange = onThemeChange,
+                onNavigateToSettings = { currentScreen = "settings" },
+                onResourceClick = { id ->
+                    selectedResourceId = id
+                    currentScreen = "detail"
+                }
             )
         }
         "settings" -> {
             SettingsScreen(
                 isDarkTheme = isDarkTheme,
                 onThemeChange = onThemeChange,
+                onBackClick = { currentScreen = "home" }
+            )
+        }
+        "detail" -> {
+            ResourceDetailScreen(
+                resourceId = selectedResourceId ?: "",
                 onBackClick = { currentScreen = "home" }
             )
         }
