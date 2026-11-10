@@ -68,7 +68,6 @@ fun AppNavigation(isAlreadyLoggedIn: Boolean) {
     val prefs = context.getSharedPreferences("NoghtePrefs", Context.MODE_PRIVATE)
     var currentScreen by remember { mutableStateOf(if (isAlreadyLoggedIn) "home" else "login") }
 
-    // ✅ مشکل اینجا با اضافه کردن () -> Unit حل شد
     val changeLanguage: () -> Unit = {
         val currentLang = prefs.getString("APP_LANG", "fa")
         val newLang = if (currentLang == "fa") "en" else "fa"
@@ -99,9 +98,8 @@ fun AppNavigation(isAlreadyLoggedIn: Boolean) {
             PrivacyScreen(onBackClick = { currentScreen = "login" })
         }
         "home" -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = stringResource(id = R.string.home_placeholder), fontSize = 24.sp, color = Color.White)
-            }
+            // ✅ اینجا تغییر کرده و صفحه منابع صدا زده میشه
+            ResourceListScreen()
         }
     }
 }
