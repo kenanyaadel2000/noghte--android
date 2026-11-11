@@ -91,7 +91,7 @@ fun AppNavigation(
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("NoghtePrefs", Context.MODE_PRIVATE)
     var currentScreen by remember { mutableStateOf(if (isAlreadyLoggedIn) "home" else "login") }
-    var selectedResourceId by remember { mutableStateOf<String?>(null) } // برای نگه داشتن ID منبع انتخاب شده
+    var selectedResourceId by remember { mutableStateOf<String?>(null) }
 
     val changeLanguage: () -> Unit = {
         val currentLang = prefs.getString("APP_LANG", "fa")
@@ -131,6 +131,11 @@ fun AppNavigation(
                 onResourceClick = { id ->
                     selectedResourceId = id
                     currentScreen = "detail"
+                },
+                onLogout = {
+                    // پاک کردن وضعیت لاگین و رفتن به صفحه ورود
+                    prefs.edit().putBoolean("IS_LOGGED_IN", false).apply()
+                    currentScreen = "login"
                 }
             )
         }
