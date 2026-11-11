@@ -108,6 +108,10 @@ fun AppNavigation(
         (context as? ComponentActivity)?.recreate()
     }
 
+    val toggleTheme: () -> Unit = {
+        onThemeChange(!isDarkTheme)
+    }
+
     when (currentScreen) {
         "login" -> {
             LoginScreen(
@@ -117,7 +121,8 @@ fun AppNavigation(
                     currentScreen = "home"
                 },
                 onNavigateToPrivacy = { currentScreen = "privacy" },
-                onLanguageChange = changeLanguage
+                onLanguageChange = changeLanguage,
+                onThemeToggle = toggleTheme // ✅ پاس دادن کالبک تم
             )
         }
         "privacy" -> {
@@ -133,7 +138,6 @@ fun AppNavigation(
                     currentScreen = "detail"
                 },
                 onLogout = {
-                    // پاک کردن وضعیت لاگین و رفتن به صفحه ورود
                     prefs.edit().putBoolean("IS_LOGGED_IN", false).apply()
                     currentScreen = "login"
                 }
@@ -143,6 +147,7 @@ fun AppNavigation(
             SettingsScreen(
                 isDarkTheme = isDarkTheme,
                 onThemeChange = onThemeChange,
+                onLanguageChange = changeLanguage, // ✅ پاس دادن کالبک زبان
                 onBackClick = { currentScreen = "home" }
             )
         }
