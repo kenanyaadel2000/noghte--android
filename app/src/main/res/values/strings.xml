@@ -8,6 +8,14 @@
     <string name="agree_checkbox">قوانین را می‌پذیرم</string>
     <string name="back_button">بازگشت</string>
     <string name="change_language">تغییر زبان</string>
+        <!-- Profile -->
+    <string name="profile_name">علی محمدی</string>
+    <string name="profile_email">ali.mohammadi@company.com</string>
+    <string name="profile_role_label">نقش</string>
+    <string name="profile_role_value">viewer, analyst</string>
+    <string name="profile_org_label">سازمان</string>
+    <string name="profile_org_value">Noghte Security</string>
+    <string name="logout_button">خروج از حساب</string>
     
     <!-- New Strings for Resources -->
     <string name="resources_title">منابع</string>
