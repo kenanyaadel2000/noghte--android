@@ -16,7 +16,8 @@
     <string name="profile_org_label">سازمان</string>
     <string name="profile_org_value">Noghte Security</string>
     <string name="logout_button">خروج از حساب</string>
-    
+    <string name="theme_toggle">تغییر تم</string>
+    <string name="language_toggle">تغییر زبان</string>
     <!-- New Strings for Resources -->
     <string name="resources_title">منابع</string>
     <string name="search_placeholder">جستجوی منبع...</string>
