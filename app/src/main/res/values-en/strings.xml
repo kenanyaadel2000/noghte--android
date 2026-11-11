@@ -8,6 +8,14 @@
     <string name="agree_checkbox">I accept the terms</string>
     <string name="back_button">Back</string>
     <string name="change_language">Change Language</string>
+        <!-- Profile -->
+    <string name="profile_name">Ali Mohammadi</string>
+    <string name="profile_email">ali.mohammadi@company.com</string>
+    <string name="profile_role_label">Role</string>
+    <string name="profile_role_value">viewer, analyst</string>
+    <string name="profile_org_label">Organization</string>
+    <string name="profile_org_value">Noghte Security</string>
+    <string name="logout_button">Logout</string>
 
     <!-- New Strings for Resources -->
     <string name="resources_title">Resources</string>
