@@ -5,33 +5,14 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,12 +29,12 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun LoginScreen(
-    isDarkTheme: Boolean, // دریافت وضعیت تم از MainActivity
+    isDarkTheme: Boolean, // دریافت وضعیت تم
     onLoginSuccess: () -> Unit,
     onNavigateToPrivacy: () -> Unit,
-    onLanguageChange: () -> Unit
+    onLanguageChange: () -> Unit,
+    onThemeToggle: () -> Unit // کالبک تغییر تم
 ) {
-    // استفاده از رنگ‌های تم برای هماهنگی با حالت روشن و تیره
     val primaryGold = MaterialTheme.colorScheme.primary
     val backgroundColor = MaterialTheme.colorScheme.background
     val textColor = MaterialTheme.colorScheme.onBackground
@@ -85,18 +66,33 @@ fun LoginScreen(
         color = backgroundColor
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // دکمه تغییر زبان در بالای صفحه
-            TextButton(
-                onClick = onLanguageChange,
+            
+            // نوار بالای صفحه (زبان سمت چپ، تغییر تم سمت راست)
+            Row(
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
+                    .fillMaxWidth()
                     .padding(16.dp)
+                    .align(Alignment.TopCenter),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "🌐 " + stringResource(id = R.string.change_language),
-                    color = primaryGold,
-                    fontSize = 14.sp
-                )
+                // دکمه زبان (سمت چپ)
+                IconButton(onClick = onLanguageChange) {
+                    Icon(
+                        imageVector = Icons.Default.Language,
+                        contentDescription = stringResource(id = R.string.language_toggle),
+                        tint = primaryGold
+                    )
+                }
+                
+                // دکمه تغییر تم (سمت راست)
+                IconButton(onClick = onThemeToggle) {
+                    Icon(
+                        imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
+                        contentDescription = stringResource(id = R.string.theme_toggle),
+                        tint = primaryGold
+                    )
+                }
             }
 
             Column(
@@ -106,7 +102,7 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // لوگو که بر اساس تم (روشن/تیره) عکسش عوض میشه
+                // لوگو که بر اساس تم تغییر میکنه
                 Image(
                     painter = painterResource(id = if (isDarkTheme) R.drawable.ic_logo_dark else R.drawable.ic_logo_light),
                     contentDescription = "Noghte Logo",
@@ -130,7 +126,7 @@ fun LoginScreen(
                 Text(
                     text = stringResource(id = R.string.login_subtitle),
                     fontSize = 16.sp,
-                    color = textColor.copy(alpha = 0.7f), // کمی محو تر برای زیبایی
+                    color = textColor.copy(alpha = 0.7f),
                     textAlign = TextAlign.Center
                 )
 
