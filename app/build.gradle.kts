@@ -2,9 +2,11 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
+
 android {
     namespace = "com.example.noghte"
     compileSdk = 34
+
     defaultConfig {
         applicationId = "com.example.noghte"
         minSdk = 26
@@ -12,6 +14,7 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
+
     buildFeatures {
         compose = true
     }
@@ -26,20 +29,25 @@ android {
         jvmTarget = "17"
     }
 }
+
 dependencies {
-    // --- Jetpack Compose Dependencies ---
+    // Compose
     implementation(platform("androidx.compose:compose-bom:2024.02.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.activity:activity-compose:1.8.2")
-    
-    // برای آیکون‌های Material Design (مثل Search, Settings, User و...)
     implementation("androidx.compose.material:material-icons-extended")
 
-    // --- Appwrite SDK ---
+    // Appwrite SDK
     implementation("io.appwrite:sdk-for-android:5.0.0")
 
-    // --- OkHttp (حل مشکل تداخل نسخه) ---
-    // به جای استفاده از platform، نسخه دقیق رو اینجا ست می‌کنیم تا ارور نده
+    // OkHttp (بدون BOM و پلتفرم)
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+}
+
+// این بخش جادویی کار می‌کنه و نسخه‌ها رو مجبور به یکسان‌سازی می‌کنه
+configurations.all {
+    resolutionStrategy {
+        force("com.squareup.okhttp3:okhttp:4.12.0")
+    }
 }
