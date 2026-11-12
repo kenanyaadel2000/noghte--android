@@ -31,21 +31,21 @@ android {
 }
 
 dependencies {
-    // Compose
+    // Jetpack Compose
     implementation(platform("androidx.compose:compose-bom:2024.02.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.compose.material:material-icons-extended")
 
-    // Appwrite SDK
+    // Appwrite SDK (نسخه مخصوص اندروید)
     implementation("io.appwrite:sdk-for-android:5.0.0")
 
-    // OkHttp (بدون BOM و پلتفرم)
+    // OkHttp (نسخه دقیق، بدون BOM و پلتفرم)
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
 
-// این بخش جادویی کار می‌کنه و نسخه‌ها رو مجبور به یکسان‌سازی می‌کنه
+// 🪄 این بخش به Gradle می‌گه: هر جا هر نسخه‌ای از OkHttp دیدی، فقط از این نسخه استفاده کن!
 configurations.all {
     resolutionStrategy {
         force("com.squareup.okhttp3:okhttp:4.12.0")
