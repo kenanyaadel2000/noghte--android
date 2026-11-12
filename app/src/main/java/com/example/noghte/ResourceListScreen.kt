@@ -17,7 +17,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -28,7 +27,7 @@ fun ResourceListScreen(
     onThemeChange: (Boolean) -> Unit,
     onNavigateToSettings: () -> Unit,
     onResourceClick: (String) -> Unit,
-    onLogout: () -> Unit // ✅ کالبک خروج
+    onLogout: () -> Unit
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val backgroundColor = MaterialTheme.colorScheme.background
@@ -36,31 +35,73 @@ fun ResourceListScreen(
     val textColor = MaterialTheme.colorScheme.onBackground
 
     var selectedTab by remember { mutableIntStateOf(0) }
+    var isSearchActive by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
+
+    // فیلتر کردن منابع بر اساس متن جستجو
+    val filteredResources = if (searchQuery.isEmpty()) {
+        FakeData.resources
+    } else {
+        FakeData.resources.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    }
 
     Scaffold(
         containerColor = backgroundColor,
         topBar = {
-            TopAppBar(
-                title = { 
-                    val title = when(selectedTab) {
-                        0 -> stringResource(id = R.string.resources_title)
-                        1 -> stringResource(id = R.string.tab_logs)
-                        else -> stringResource(id = R.string.tab_profile)
-                    }
-                    Text(text = title, color = primaryColor, fontWeight = FontWeight.Bold) 
-                },
-                actions = {
-                    if (selectedTab == 0) {
-                        IconButton(onClick = { /* TODO: Search */ }) {
-                            Icon(Icons.Default.Search, contentDescription = "Search", tint = primaryColor)
+            if (isSearchActive) {
+                // نوار جستجو (وقتی فعاله)
+                TopAppBar(
+                    title = {
+                        TextField(
+                            value = searchQuery,
+                            onValueChange = { searchQuery = it },
+                            placeholder = { Text(stringResource(id = R.string.search_placeholder)) },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedTextColor = textColor,
+                                unfocusedTextColor = textColor
+                            ),
+                            singleLine = true
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { 
+                            isSearchActive = false 
+                            searchQuery = ""
+                        }) {
+                            Icon(Icons.Default.Close, contentDescription = "Close", tint = primaryColor)
                         }
-                    }
-                    IconButton(onClick = onNavigateToSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = "Settings", tint = primaryColor)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = backgroundColor)
-            )
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = backgroundColor)
+                )
+            } else {
+                // نوار بالا (حالت عادی)
+                TopAppBar(
+                    title = {
+                        val title = when(selectedTab) {
+                            0 -> stringResource(id = R.string.resources_title)
+                            1 -> stringResource(id = R.string.tab_logs)
+                            else -> stringResource(id = R.string.tab_profile)
+                        }
+                        Text(text = title, color = primaryColor, fontWeight = FontWeight.Bold)
+                    },
+                    actions = {
+                        if (selectedTab == 0) {
+                            IconButton(onClick = { isSearchActive = true }) {
+                                Icon(Icons.Default.Search, contentDescription = "Search", tint = primaryColor)
+                            }
+                        }
+                        IconButton(onClick = onNavigateToSettings) {
+                            Icon(Icons.Default.Settings, contentDescription = "Settings", tint = primaryColor)
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = backgroundColor)
+                )
+            }
         },
         bottomBar = {
             NavigationBar(containerColor = surfaceColor) {
@@ -99,7 +140,15 @@ fun ResourceListScreen(
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
             when (selectedTab) {
-                0 -> ResourcesTab(primaryColor, surfaceColor, textColor, onResourceClick)
+                0 -> {
+                    if (filteredResources.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("منبعی یافت نشد", color = textColor)
+                        }
+                    } else {
+                        ResourcesTab(primaryColor, surfaceColor, textColor, filteredResources, onResourceClick)
+                    }
+                }
                 1 -> LogsTab(primaryColor, surfaceColor, textColor)
                 2 -> ProfileTab(primaryColor, surfaceColor, textColor, onLogout)
             }
@@ -112,6 +161,7 @@ fun ResourcesTab(
     primaryColor: Color,
     surfaceColor: Color,
     textColor: Color,
+    resources: List<Resource>,
     onResourceClick: (String) -> Unit
 ) {
     LazyColumn(
@@ -119,20 +169,17 @@ fun ResourcesTab(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(FakeData.resources) { resource ->
+        items(resources) { resource ->
             ResourceCard(resource = resource, primaryColor = primaryColor, surfaceColor = surfaceColor, textColor = textColor, onClick = { onResourceClick(resource.id) })
         }
     }
 }
 
+// بقیه توابع (ResourceCard, LogsTab, ProfileTab) بدون تغییر باقی می‌مونن، 
+// اما برای اینکه کد کامل باشه، اینجا می‌ذارمشون:
+
 @Composable
-fun ResourceCard(
-    resource: Resource, 
-    primaryColor: Color, 
-    surfaceColor: Color,
-    textColor: Color,
-    onClick: () -> Unit
-) {
+fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, textColor: Color, onClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onClick() },
         colors = CardDefaults.cardColors(containerColor = surfaceColor),
@@ -164,11 +211,7 @@ fun ResourceCard(
 }
 
 @Composable
-fun LogsTab(
-    primaryColor: Color,
-    surfaceColor: Color,
-    textColor: Color
-) {
+fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -182,7 +225,7 @@ fun LogsTab(
             ) {
                 Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                     val isAllowed = log.status == "ALLOWED"
-                    val statusColor = if (isAllowed) Color(0xFF4CAF50) else Color(0xFFF44336) // سبز یا قرمز
+                    val statusColor = if (isAllowed) Color(0xFF4CAF50) else Color(0xFFF44336)
                     val statusIcon = if (isAllowed) Icons.Default.CheckCircle else Icons.Default.Cancel
 
                     Icon(statusIcon, contentDescription = null, tint = statusColor, modifier = Modifier.size(32.dp))
@@ -199,17 +242,11 @@ fun LogsTab(
 }
 
 @Composable
-fun ProfileTab(
-    primaryColor: Color,
-    surfaceColor: Color,
-    textColor: Color,
-    onLogout: () -> Unit
-) {
+fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLogout: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // آواتار
         Box(
             modifier = Modifier.size(100.dp).clip(CircleShape).background(primaryColor.copy(alpha = 0.2f)),
             contentAlignment = Alignment.Center
@@ -224,7 +261,6 @@ fun ProfileTab(
         
         Spacer(modifier = Modifier.height(32.dp))
         
-        // کارت اطلاعات
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = surfaceColor),
@@ -245,11 +281,10 @@ fun ProfileTab(
         
         Spacer(modifier = Modifier.weight(1f))
         
-        // دکمه خروج
         Button(
             onClick = onLogout,
             modifier = Modifier.fillMaxWidth().height(50.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F), contentColor = Color.White), // قرمز
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F), contentColor = Color.White),
             shape = RoundedCornerShape(12.dp)
         ) {
             Icon(Icons.Default.ExitToApp, contentDescription = null)
