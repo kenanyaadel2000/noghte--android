@@ -29,11 +29,12 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun LoginScreen(
-    isDarkTheme: Boolean, // دریافت وضعیت تم
+    isDarkTheme: Boolean,
     onLoginSuccess: () -> Unit,
     onNavigateToPrivacy: () -> Unit,
     onLanguageChange: () -> Unit,
-    onThemeToggle: () -> Unit // کالبک تغییر تم
+    onThemeToggle: () -> Unit,
+    onNavigateToRegister: () -> Unit // ✅ پارامتر جدید برای رفتن به ثبت‌نام
 ) {
     val primaryGold = MaterialTheme.colorScheme.primary
     val backgroundColor = MaterialTheme.colorScheme.background
@@ -66,8 +67,7 @@ fun LoginScreen(
         color = backgroundColor
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            
-            // نوار بالای صفحه (زبان سمت چپ، تغییر تم سمت راست)
+            // نوار بالای صفحه
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -76,20 +76,13 @@ fun LoginScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // دکمه زبان (سمت چپ)
                 IconButton(onClick = onLanguageChange) {
-                    Icon(
-                        imageVector = Icons.Default.Language,
-                        contentDescription = stringResource(id = R.string.language_toggle),
-                        tint = primaryGold
-                    )
+                    Icon(Icons.Default.Language, contentDescription = "Language", tint = primaryGold)
                 }
-                
-                // دکمه تغییر تم (سمت راست)
                 IconButton(onClick = onThemeToggle) {
                     Icon(
                         imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
-                        contentDescription = stringResource(id = R.string.theme_toggle),
+                        contentDescription = "Theme",
                         tint = primaryGold
                     )
                 }
@@ -102,14 +95,13 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // لوگو که بر اساس تم تغییر میکنه
                 Image(
                     painter = painterResource(id = if (isDarkTheme) R.drawable.ic_logo_dark else R.drawable.ic_logo_light),
                     contentDescription = "Noghte Logo",
                     modifier = Modifier
                         .size(140.dp)
                         .scale(scale.value)
-                        .clip(RoundedCornerShape(32.dp)) 
+                        .clip(RoundedCornerShape(32.dp))
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -160,8 +152,8 @@ fun LoginScreen(
                         )
                     }
                 }
-                
-                Spacer(modifier = Modifier.height(24.dp))
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -172,7 +164,7 @@ fun LoginScreen(
                         checked = isChecked,
                         onCheckedChange = { isChecked = it },
                         colors = CheckboxDefaults.colors(
-                            checkedColor = primaryGold, 
+                            checkedColor = primaryGold,
                             uncheckedColor = textColor.copy(alpha = 0.5f)
                         )
                     )
@@ -184,7 +176,7 @@ fun LoginScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
                     text = stringResource(id = R.string.login_privacy_agree),
@@ -197,6 +189,20 @@ fun LoginScreen(
                         .fillMaxWidth()
                         .clickable { onNavigateToPrivacy() }
                 )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // ✅ بخش دکمه ثبت‌نام
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = "حساب کاربری ندارید؟", color = textColor.copy(alpha = 0.7f), fontSize = 14.sp)
+                    TextButton(onClick = onNavigateToRegister) {
+                        Text(text = "ثبت‌نام کنید", color = primaryGold, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    }
+                }
             }
         }
     }
