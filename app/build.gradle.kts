@@ -27,16 +27,19 @@ android {
     }
 }
 dependencies {
-    implementation("io.appwrite:sdk-for-android:5.0.0")
-    // ... خط Appwrite که قبلاً اضافه کردی ...
-    implementation("io.appwrite:sdk-for-android:5.0.0")
-
-    // ✅ این دو خط را اضافه کن تا مشکل OkHttp حل شود
-    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
-    implementation("com.squareup.okhttp3:okhttp")
+    // --- Jetpack Compose Dependencies ---
     implementation(platform("androidx.compose:compose-bom:2024.02.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.activity:activity-compose:1.8.2")
+    
+    // برای آیکون‌های Material Design (مثل Search, Settings, User و...)
+    implementation("androidx.compose.material:material-icons-extended")
+
+    // --- Appwrite SDK ---
+    implementation("io.appwrite:sdk-for-android:5.0.0")
+
+    // --- OkHttp (حل مشکل تداخل نسخه) ---
+    // به جای استفاده از platform، نسخه دقیق رو اینجا ست می‌کنیم تا ارور نده
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
