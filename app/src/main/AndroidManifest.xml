@@ -6,6 +6,7 @@
         android:icon="@drawable/ic_logo_dark"
         android:roundIcon="@drawable/ic_logo_dark"
         android:theme="@style/Theme.Material3.DayNight.NoActionBar">
+        <uses-permission android:name="android.permission.INTERNET" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
