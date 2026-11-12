@@ -28,6 +28,12 @@ android {
 }
 dependencies {
     implementation("io.appwrite:sdk-for-android:5.0.0")
+    // ... خط Appwrite که قبلاً اضافه کردی ...
+    implementation("io.appwrite:sdk-for-android:5.0.0")
+
+    // ✅ این دو خط را اضافه کن تا مشکل OkHttp حل شود
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
+    implementation("com.squareup.okhttp3:okhttp")
     implementation(platform("androidx.compose:compose-bom:2024.02.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
