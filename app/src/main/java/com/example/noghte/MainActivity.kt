@@ -26,6 +26,8 @@ import java.util.Locale
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppwriteClient.init(applicationContext)
+        // شروع اتصال به Appwrit
         
         val prefs = getSharedPreferences("NoghtePrefs", Context.MODE_PRIVATE)
         val isLoggedIn = prefs.getBoolean("IS_LOGGED_IN", false)
