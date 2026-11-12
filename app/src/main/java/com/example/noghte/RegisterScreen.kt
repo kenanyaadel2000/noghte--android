@@ -10,15 +10,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.appwrite.ID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(onBackClick: () -> Unit) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
     
+    val scope = rememberCoroutineScope()
     val primaryColor = MaterialTheme.colorScheme.primary
     val textColor = MaterialTheme.colorScheme.onBackground
 
@@ -62,18 +71,65 @@ fun RegisterScreen(onBackClick: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor, focusedLabelColor = primaryColor)
             )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // فیلد جدید پسورد
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("رمز عبور") },
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor, focusedLabelColor = primaryColor)
+            )
+
+            if (errorMessage != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = errorMessage!!, color = Color.Red, fontSize = 14.sp)
+            }
+
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
                 onClick = { 
-                    // در حالت واقعی اینجا به بک‌اند (Appwrite) وصل میشه
-                    onBackClick() 
+                    if (email.isBlank() || password.isBlank() || name.isBlank()) {
+                        errorMessage = "لطفاً همه فیلدها را پر کنید."
+                        return@Button
+                    }
+                    
+                    isLoading = true
+                    errorMessage = null
+                    
+                    scope.launch {
+                        try {
+                            // ثبت نام در Appwrite
+                            val newUser = withContext(Dispatchers.IO) {
+                                AppwriteClient.account.create(
+                                    userId = ID.unique(),
+                                    email = email,
+                                    password = password,
+                                    name = name
+                                )
+                            }
+                            // در صورت موفقیت، برگرد به لاگین
+                            isLoading = false
+                            onBackClick()
+                        } catch (e: Exception) {
+                            isLoading = false
+                            errorMessage = "خطا در ثبت‌نام: ${e.message}"
+                        }
+                    }
                 },
+                enabled = !isLoading,
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = primaryColor, contentColor = Color.Black),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("ثبت‌نام", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                if (isLoading) {
+                    CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
+                } else {
+                    Text("ثبت‌نام", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                }
             }
         }
     }
