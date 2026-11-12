@@ -38,16 +38,9 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.compose.material:material-icons-extended")
 
-    // Appwrite SDK (نسخه مخصوص اندروید)
-    implementation("io.appwrite:sdk-for-android:5.0.0")
+    // ✅ ارتقا به نسخه 5.1.0 که مشکل اوک‌اچ‌تی‌تی‌پی رو حل کرده
+    implementation("io.appwrite:sdk-for-android:5.1.0")
 
-    // OkHttp (نسخه دقیق، بدون BOM و پلتفرم)
+    // OkHttp (برای اینکه خیالمون راحت باشه)
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-}
-
-// 🪄 این بخش به Gradle می‌گه: هر جا هر نسخه‌ای از OkHttp دیدی، فقط از این نسخه استفاده کن!
-configurations.all {
-    resolutionStrategy {
-        force("com.squareup.okhttp3:okhttp:4.12.0")
-    }
 }
