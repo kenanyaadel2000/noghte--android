@@ -122,8 +122,12 @@ fun AppNavigation(
                 },
                 onNavigateToPrivacy = { currentScreen = "privacy" },
                 onLanguageChange = changeLanguage,
-                onThemeToggle = toggleTheme // ✅ پاس دادن کالبک تم
+                onThemeToggle = toggleTheme,
+                onNavigateToRegister = { currentScreen = "register" } // ✅ رفتن به ثبت نام
             )
+        }
+        "register" -> {
+            RegisterScreen(onBackClick = { currentScreen = "login" }) // ✅ صفحه ثبت نام
         }
         "privacy" -> {
             PrivacyScreen(onBackClick = { currentScreen = "login" })
@@ -147,7 +151,7 @@ fun AppNavigation(
             SettingsScreen(
                 isDarkTheme = isDarkTheme,
                 onThemeChange = onThemeChange,
-                onLanguageChange = changeLanguage, // ✅ پاس دادن کالبک زبان
+                onLanguageChange = changeLanguage,
                 onBackClick = { currentScreen = "home" }
             )
         }
