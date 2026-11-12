@@ -27,7 +27,7 @@ android {
     }
 }
 dependencies {
-    implementation("io.appwrite:sdk-for-kotlin:5.0.0")
+    implementation("io.appwrite:sdk-for-android:5.0.0")
     implementation(platform("androidx.compose:compose-bom:2024.02.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
