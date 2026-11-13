@@ -21,11 +21,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun LoginScreen(
@@ -34,14 +37,19 @@ fun LoginScreen(
     onNavigateToPrivacy: () -> Unit,
     onLanguageChange: () -> Unit,
     onThemeToggle: () -> Unit,
-    onNavigateToRegister: () -> Unit // ✅ پارامتر جدید برای رفتن به ثبت‌نام
+    onNavigateToRegister: () -> Unit
 ) {
     val primaryGold = MaterialTheme.colorScheme.primary
     val backgroundColor = MaterialTheme.colorScheme.background
     val textColor = MaterialTheme.colorScheme.onBackground
 
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     var isChecked by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    val scope = rememberCoroutineScope()
 
     val scale = remember { Animatable(0.5f) }
     LaunchedEffect(Unit) {
@@ -52,14 +60,6 @@ fun LoginScreen(
                 stiffness = Spring.StiffnessLow
             )
         )
-    }
-
-    LaunchedEffect(isLoading) {
-        if (isLoading) {
-            delay(3000)
-            isLoading = false
-            onLoginSuccess()
-        }
     }
 
     Surface(
@@ -99,12 +99,12 @@ fun LoginScreen(
                     painter = painterResource(id = if (isDarkTheme) R.drawable.ic_logo_dark else R.drawable.ic_logo_light),
                     contentDescription = "Noghte Logo",
                     modifier = Modifier
-                        .size(140.dp)
+                        .size(120.dp)
                         .scale(scale.value)
                         .clip(RoundedCornerShape(32.dp))
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
                     text = stringResource(id = R.string.app_name),
@@ -113,19 +113,59 @@ fun LoginScreen(
                     color = primaryGold
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
-                Text(
-                    text = stringResource(id = R.string.login_subtitle),
-                    fontSize = 16.sp,
-                    color = textColor.copy(alpha = 0.7f),
-                    textAlign = TextAlign.Center
+                // فیلد ایمیل
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("ایمیل") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryGold, focusedLabelColor = primaryGold),
+                    singleLine = true
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // فیلد پسورد
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("رمز عبور") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryGold, focusedLabelColor = primaryGold),
+                    singleLine = true
                 )
 
-                Spacer(modifier = Modifier.height(48.dp))
+                if (errorMessage != null) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(text = errorMessage!!, color = Color.Red, fontSize = 14.sp, textAlign = TextAlign.Center)
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
-                    onClick = { isLoading = true },
+                    onClick = { 
+                        if (email.isBlank() || password.isBlank()) {
+                            errorMessage = "لطفاً ایمیل و رمز عبور را وارد کنید."
+                            return@Button
+                        }
+                        isLoading = true
+                        errorMessage = null
+                        scope.launch {
+                            try {
+                                withContext(Dispatchers.IO) {
+                                    AppwriteClient.account.createEmailPasswordSession(email, password)
+                                }
+                                isLoading = false
+                                onLoginSuccess()
+                            } catch (e: Exception) {
+                                isLoading = false
+                                errorMessage = "ایمیل یا رمز عبور اشتباه است."
+                            }
+                        }
+                    },
                     enabled = !isLoading && isChecked,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -139,20 +179,12 @@ fun LoginScreen(
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     if (isLoading) {
-                        CircularProgressIndicator(
-                            color = Color.Black,
-                            modifier = Modifier.size(24.dp),
-                            strokeWidth = 2.dp
-                        )
+                        CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
                     } else {
-                        Text(
-                            text = stringResource(id = R.string.login_button),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Text("ورود به نقطه", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     }
                 }
-
+                
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
@@ -163,20 +195,11 @@ fun LoginScreen(
                     Checkbox(
                         checked = isChecked,
                         onCheckedChange = { isChecked = it },
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = primaryGold,
-                            uncheckedColor = textColor.copy(alpha = 0.5f)
-                        )
+                        colors = CheckboxDefaults.colors(checkedColor = primaryGold, uncheckedColor = textColor.copy(alpha = 0.5f))
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(id = R.string.agree_checkbox),
-                        fontSize = 14.sp,
-                        color = textColor
-                    )
+                    Text(text = stringResource(id = R.string.agree_checkbox), fontSize = 14.sp, color = textColor)
                 }
-
-                Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
                     text = stringResource(id = R.string.login_privacy_agree),
@@ -184,15 +207,13 @@ fun LoginScreen(
                     color = primaryGold,
                     textDecoration = TextDecoration.Underline,
                     textAlign = TextAlign.Center,
-                    maxLines = 1,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onNavigateToPrivacy() }
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // ✅ بخش دکمه ثبت‌نام
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
