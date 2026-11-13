@@ -116,18 +116,18 @@ fun AppNavigation(
 
     when (currentScreen) {
         "login" -> {
-            LoginScreen(
-                isDarkTheme = isDarkTheme,
-                onLoginSuccess = {
-                    prefs.edit().putBoolean("IS_LOGGED_IN", true).apply()
-                    currentScreen = "home"
-                },
-                onNavigateToPrivacy = { currentScreen = "privacy" },
-                onLanguageChange = changeLanguage,
-                onThemeToggle = toggleTheme,
-                onNavigateToRegister = { currentScreen = "register" } // ✅ رفتن به ثبت نام
-            )
-        }
+    LoginScreen(
+        isDarkTheme = isDarkTheme,
+        onLoginSuccess = {
+            prefs.edit().putBoolean("IS_LOGGED_IN", true).apply()
+            currentScreen = "home"
+        },
+        onNavigateToPrivacy = { currentScreen = "privacy" },
+        onLanguageChange = changeLanguage,
+        onThemeToggle = toggleTheme,
+        onNavigateToRegister = { currentScreen = "register" }
+    )
+}
         "register" -> {
             RegisterScreen(onBackClick = { currentScreen = "login" }) // ✅ صفحه ثبت نام
         }
