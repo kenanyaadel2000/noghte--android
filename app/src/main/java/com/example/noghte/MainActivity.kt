@@ -125,7 +125,12 @@ fun AppNavigation(
         onNavigateToPrivacy = { currentScreen = "privacy" },
         onLanguageChange = changeLanguage,
         onThemeToggle = toggleTheme,
-        onNavigateToRegister = { currentScreen = "register" }
+        onNavigateToRegister = { currentScreen = "register" },
+        onGuestLogin = {
+            // ✅ ورود مهمان: به عنوان یک کاربر ویوور فیک ست میشه
+            FakeData.currentUser = User("guest", "کاربر مهمان", "guest@noghte.com", "VIEWER")
+            currentScreen = "home"
+        }
     )
 }
         "register" -> {
