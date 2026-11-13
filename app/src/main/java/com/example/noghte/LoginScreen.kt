@@ -153,34 +153,29 @@ fun LoginScreen(
                         errorMessage = null
                         scope.launch {
                             try {
-                                // ۱. لاگین
                                 withContext(Dispatchers.IO) {
                                     AppwriteClient.account.createEmailPasswordSession(email, password)
                                 }
                                 
-                                // ۲. چک کردن تایید ایمیل
                                 val currentUser = withContext(Dispatchers.IO) {
                                     AppwriteClient.account.get()
                                 }
 
                                 if (!currentUser.emailVerification) {
                                     try {
-                                        // ✅ تغییر به createVerification برای نسخه اندروید
                                         withContext(Dispatchers.IO) {
                                             AppwriteClient.account.createVerification(url = "https://noghte.com/verify")
                                         }
-                                    } catch (e: Exception) {
-                                        // اگر ارور داد که زود درخواست دادی، نادیده بگیر
-                                    }
+                                    } catch (e: Exception) {}
                                     
                                     withContext(Dispatchers.IO) {
                                         AppwriteClient.account.deleteSession("current")
                                     }
                                     
-                                    throw Exception("ایمیل شما هنوز تایید نشده است. لینک جدید ارسال شد (اسپم را چک کنید).")
+                                    // ✅ متن ارور تغییر کرد
+                                    throw Exception("حساب شما هنوز توسط ادمین تایید نشده است. لطفا منتظر بمانید تایید شود.")
                                 }
 
-                                // ۳. ذخیره اطلاعات
                                 FakeData.currentUser = User(
                                     id = currentUser.id,
                                     name = currentUser.name,
@@ -217,6 +212,7 @@ fun LoginScreen(
                 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // ✅ بخش قوانین (کلمه قوانین لینک شد و بقیه متن راست‌چین شد)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth(),
@@ -228,28 +224,31 @@ fun LoginScreen(
                         colors = CheckboxDefaults.colors(checkedColor = primaryGold, uncheckedColor = textColor.copy(alpha = 0.5f))
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = stringResource(id = R.string.agree_checkbox), fontSize = 14.sp, color = textColor)
+                    Text(text = "قوانین را می‌پذیرم", fontSize = 14.sp, color = textColor)
+                    Text(
+                        text = " (مشاهده)",
+                        fontSize = 14.sp,
+                        color = primaryGold,
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier.clickable { onNavigateToPrivacy() }
+                    )
                 }
-
-                Text(
-                    text = stringResource(id = R.string.login_privacy_agree),
-                    fontSize = 14.sp,
-                    color = primaryGold,
-                    textDecoration = TextDecoration.Underline,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onNavigateToPrivacy() }
-                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                TextButton(onClick = onGuestLogin) {
-                    Text(text = "ورود به عنوان مهمان", color = textColor.copy(alpha = 0.7f), fontSize = 14.sp)
-                }
-
-                TextButton(onClick = onNavigateToRegister) {
-                    Text(text = "ثبت‌نام", color = primaryGold, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                // ✅ بخش پایین (دکمه‌های مهمان و ثبت‌نام مرتب شدند)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(onClick = onGuestLogin) {
+                        Text(text = "ورود مهمان", color = textColor.copy(alpha = 0.7f), fontSize = 14.sp)
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    TextButton(onClick = onNavigateToRegister) {
+                        Text(text = "ثبت‌نام", color = primaryGold, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    }
                 }
             }
         }
