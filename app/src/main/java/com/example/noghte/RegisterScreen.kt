@@ -88,7 +88,8 @@ fun RegisterScreen(
                 label = { Text("رمز عبور") },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaultscolors(focusedBorderColor = primaryColor, focusedLabelColor = primaryColor)
+                // ✅ اینجا نقطه جا افتاده بود که اصلاح شد
+                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor, focusedLabelColor = primaryColor)
             )
 
             // نمایش پیام خطا (قرمز)
@@ -161,7 +162,7 @@ fun RegisterScreen(
                                     AppwriteClient.account.createVerification(url = "https://noghte.com/verify")
                                 }
                             } catch (e: Exception) {
-                                // اگر ارسال ایمیل خطا داد، نادیده بگیر تا بقیه فرآیند طی شود
+                                // اگر ارسال ایمیل خطا داد، نادیده بگیر
                             }
 
                             // ۴. ذخیره در دیتابیس
