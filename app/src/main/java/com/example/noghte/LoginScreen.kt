@@ -18,12 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
@@ -115,7 +117,6 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // ✅ استفاده از stringResource برای برچسب‌ها
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
@@ -147,7 +148,7 @@ fun LoginScreen(
                 Button(
                     onClick = { 
                         if (email.isBlank() || password.isBlank()) {
-                            errorMessage = "لطفاً ایمیل و رمز عبور را وارد کنید."
+                            errorMessage = stringResource(id = R.string.error_empty_fields)
                             return@Button
                         }
                         isLoading = true
@@ -173,7 +174,7 @@ fun LoginScreen(
                                         AppwriteClient.account.deleteSession("current")
                                     }
                                     
-                                    throw Exception("حساب شما هنوز توسط ادمین تایید نشده است. لطفا منتظر بمانید تایید شود.")
+                                    throw Exception(stringResource(id = R.string.error_not_verified))
                                 }
 
                                 FakeData.currentUser = User(
@@ -187,12 +188,11 @@ fun LoginScreen(
                                 onLoginSuccess()
                             } catch (e: Exception) {
                                 isLoading = false
-                                // ✅ ترجمه ارورهای Appwrite به فارسی/انگلیسی
                                 val msg = e.message ?: ""
                                 errorMessage = when {
-                                    msg.contains("Invalid `email`") || msg.contains("valid email") -> "فرمت ایمیل وارد شده صحیح نیست.\nInvalid email format."
-                                    msg.contains("not verified") || msg.contains("تایید نشده") -> "حساب شما هنوز توسط ادمین تایید نشده است.\nAccount not approved by admin."
-                                    msg.contains("Invalid credentials") || msg.contains("unauthorized") -> "ایمیل یا رمز عبور اشتباه است.\nInvalid credentials."
+                                    msg.contains("Invalid `email`") || msg.contains("valid email") -> stringResource(id = R.string.error_invalid_email)
+                                    msg.contains("not verified") -> stringResource(id = R.string.error_not_verified)
+                                    msg.contains("Invalid credentials") || msg.contains("unauthorized") -> stringResource(id = R.string.error_invalid_credentials)
                                     else -> msg
                                 }
                             }
@@ -219,40 +219,53 @@ fun LoginScreen(
                 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // ✅ جایگاه چک‌باکس و قوانین
-Row(
-    verticalAlignment = Alignment.CenterVertically,
-    // ❌ fillMaxWidth() حذف شد تا متن‌ها به هم بچسبن
-    modifier = Modifier.wrapContentWidth(), 
-    horizontalArrangement = Arrangement.Center
-) {
-    Checkbox(
-        checked = isChecked,
-        onCheckedChange = { isChecked = it },
-        colors = CheckboxDefaults.colors(checkedColor = primaryGold, uncheckedColor = textColor.copy(alpha = 0.5f))
-    )
-    
-    // ✅ فاصله کم و استاندارد (4.dp)
-    Spacer(modifier = Modifier.width(4.dp)) 
-    
-    // کلمه "قوانین" کلیک‌پذیر و طلایی
-    Text(
-        text = stringResource(id = R.string.terms_link),
-        fontSize = 14.sp,
-        color = primaryGold,
-        textDecoration = TextDecoration.Underline,
-        modifier = Modifier.clickable { onNavigateToPrivacy() }
-    )
-    // ادامه جمله "را می‌پذیرم" با یک فاصله کوچک
-    Text(
-        text = stringResource(id = R.string.terms_suffix),
-        fontSize = 14.sp,
-        color = textColor
-    )
-}
+                // ✅ بخش قوانین (اصلاح شده و کاملاً وسط‌چین)
+                val layoutDir = LocalLayoutDirection.current
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Checkbox(
+                        checked = isChecked,
+                        onCheckedChange = { isChecked = it },
+                        colors = CheckboxDefaults.colors(checkedColor = primaryGold, uncheckedColor = textColor.copy(alpha = 0.5f))
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    
+                    if (layoutDir == LayoutDirection.Rtl) {
+                        // فارسی: [قوانین] را می‌پذیرم
+                        Text(
+                            text = stringResource(id = R.string.terms_link),
+                            fontSize = 14.sp,
+                            color = primaryGold,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.clickable { onNavigateToPrivacy() }
+                        )
+                        Text(
+                            text = stringResource(id = R.string.terms_suffix),
+                            fontSize = 14.sp,
+                            color = textColor
+                        )
+                    } else {
+                        // انگلیسی: I accept the [rules]
+                        Text(
+                            text = stringResource(id = R.string.terms_prefix),
+                            fontSize = 14.sp,
+                            color = textColor
+                        )
+                        Text(
+                            text = stringResource(id = R.string.terms_link),
+                            fontSize = 14.sp,
+                            color = primaryGold,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.clickable { onNavigateToPrivacy() }
+                        )
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // ✅ دکمه‌های پایین (مهمان و ثبت‌نام)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
