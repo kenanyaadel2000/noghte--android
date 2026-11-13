@@ -38,4 +38,9 @@
     <string name="error_user_exists">این ایمیل قبلاً ثبت‌نام کرده است.</string>
     <string name="error_empty_fields">لطفاً همه فیلدها را پر کنید.</string>
     <string name="register_success_msg">ثبت‌نام انجام شد. بعد از تایید ادمین حساب شما فعال می‌شود.</string>
+    
+    <!-- ✅ این سه کلمه اضافه شدند -->
+    <string name="settings_title">تنظیمات</string>
+    <string name="dark_mode">حالت تاریک (Dark Mode)</string>
+    <string name="light_mode">حالت روشن (Light Mode)</string>
 </resources>
