@@ -1,5 +1,6 @@
 package com.example.noghte
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -11,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.appwrite.ID
@@ -28,7 +30,11 @@ fun RegisterScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+    
+    // پیام خطا (قرمز)
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    // پیام موفقیت (سبز)
+    var successMessage by remember { mutableStateOf<String?>(null) }
     
     val scope = rememberCoroutineScope()
     val primaryColor = MaterialTheme.colorScheme.primary
@@ -82,12 +88,32 @@ fun RegisterScreen(
                 label = { Text("رمز عبور") },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor, focusedLabelColor = primaryColor)
+                colors = OutlinedTextFieldDefaultscolors(focusedBorderColor = primaryColor, focusedLabelColor = primaryColor)
             )
 
+            // نمایش پیام خطا (قرمز)
             if (errorMessage != null) {
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = errorMessage!!, color = Color.Red, fontSize = 14.sp)
+                Text(text = errorMessage!!, color = Color.Red, fontSize = 14.sp, textAlign = TextAlign.Center)
+            }
+
+            // نمایش پیام موفقیت (سبز)
+            if (successMessage != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50).copy(alpha = 0.2f)),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = successMessage!!,
+                        color = Color(0xFF4CAF50), // رنگ سبز
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(12.dp)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -101,9 +127,19 @@ fun RegisterScreen(
                     
                     isLoading = true
                     errorMessage = null
+                    successMessage = null
                     
                     scope.launch {
                         try {
+                            // ۰. اگر سشنی از قبل باز مانده، پاکش کن
+                            try {
+                                withContext(Dispatchers.IO) {
+                                    AppwriteClient.account.deleteSession("current")
+                                }
+                            } catch (e: Exception) {
+                                // اگر سشنی نبود، ارور نده
+                            }
+
                             // ۱. ساخت کاربر
                             val newUser = withContext(Dispatchers.IO) {
                                 AppwriteClient.account.create(
@@ -114,29 +150,36 @@ fun RegisterScreen(
                                 )
                             }
 
-                            // ۲. لاگین موقت برای دسترسی به متد ارسال ایمیل
+                            // ۲. لاگین موقت برای ارسال ایمیل
                             withContext(Dispatchers.IO) {
                                 AppwriteClient.account.createEmailPasswordSession(email, password)
                             }
 
                             // ۳. ارسال لینک تایید
-                            // ✅ تغییر به createVerification برای نسخه اندروید
-                            withContext(Dispatchers.IO) {
-                                AppwriteClient.account.createVerification(url = "https://noghte.com/verify")
+                            try {
+                                withContext(Dispatchers.IO) {
+                                    AppwriteClient.account.createVerification(url = "https://noghte.com/verify")
+                                }
+                            } catch (e: Exception) {
+                                // اگر ارسال ایمیل خطا داد، نادیده بگیر تا بقیه فرآیند طی شود
                             }
 
                             // ۴. ذخیره در دیتابیس
-                            withContext(Dispatchers.IO) {
-                                AppwriteClient.databases.createDocument(
-                                    databaseId = AppwriteClient.DATABASE_ID,
-                                    collectionId = AppwriteClient.TABLE_ID,
-                                    documentId = ID.unique(),
-                                    data = mapOf(
-                                        "name" to name,
-                                        "email" to email,
-                                        "role" to "VIEWER"
+                            try {
+                                withContext(Dispatchers.IO) {
+                                    AppwriteClient.databases.createDocument(
+                                        databaseId = AppwriteClient.DATABASE_ID,
+                                        collectionId = AppwriteClient.TABLE_ID,
+                                        documentId = ID.unique(),
+                                        data = mapOf(
+                                            "name" to name,
+                                            "email" to email,
+                                            "role" to "VIEWER"
+                                        )
                                     )
-                                )
+                                }
+                            } catch (e: Exception) {
+                                // اگر دیتابیس ارور داد، ثبت‌نام متوقف نشود
                             }
 
                             // ۵. لاگ اوت کردن
@@ -145,11 +188,19 @@ fun RegisterScreen(
                             }
 
                             isLoading = false
-                            onNavigateToEmailSent(email)
+                            
+                            // ✅ نمایش پیام موفقیت دوزبانه
+                            successMessage = "Registration successful. Your account will be activated after admin approval.\nثبت‌نام انجام شد. بعد از تایید ادمین حساب شما فعال می‌شود."
                             
                         } catch (e: Exception) {
                             isLoading = false
-                            errorMessage = "خطا در ثبت‌نام: ${e.message}"
+                            
+                            // اگر ارور مربوط به تکراری بودن ایمیل بود، پیام مناسب بده
+                            if (e.message?.contains("already exists") == true) {
+                                errorMessage = "This email is already registered. Please login."
+                            } else {
+                                errorMessage = "خطا در ثبت‌نام: ${e.message}"
+                            }
                         }
                     }
                 },
