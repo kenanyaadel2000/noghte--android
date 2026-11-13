@@ -32,3 +32,21 @@
     <string name="dark_mode">Dark Mode</string>
     <string name="light_mode">Light Mode</string>
 </resources>
+    <!-- Login & Register Text -->
+    <string name="email_label">Email</string>
+    <string name="password_label">Password</string>
+    <string name="name_label">Full Name</string>
+    <string name="login_button_text">Login to Noghte</string>
+    <string name="register_button_text">Register</string>
+    <string name="guest_login_text">Guest Login</string>
+    <string name="terms_link">rules</string>
+    <string name="terms_suffix"> I accept</string>
+    <string name="create_account_title">Create New Account</string>
+
+<!-- Error & Success Messages -->
+    <string name="error_invalid_email">Invalid email format.</string>
+    <string name="error_not_verified">Your account has not been approved by the admin yet. Please wait.</string>
+    <string name="error_invalid_credentials">Invalid email or password.</string>
+    <string name="error_user_exists">This email is already registered.</string>
+    <string name="error_empty_fields">Please fill all fields.</string>
+    <string name="register_success_msg">Registration successful. Activated after admin approval.</string>
