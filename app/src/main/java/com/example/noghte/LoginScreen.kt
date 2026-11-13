@@ -68,7 +68,6 @@ fun LoginScreen(
         color = backgroundColor
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // نوار بالای صفحه
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -116,7 +115,6 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // فیلد ایمیل
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
@@ -128,7 +126,6 @@ fun LoginScreen(
                 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // فیلد رمز عبور
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
@@ -146,7 +143,6 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // دکمه ورود
                 Button(
                     onClick = { 
                         if (email.isBlank() || password.isBlank()) {
@@ -157,29 +153,46 @@ fun LoginScreen(
                         errorMessage = null
                         scope.launch {
                             try {
-                                // ۱. لاگین در Appwrite
+                                // ۱. لاگین
                                 withContext(Dispatchers.IO) {
                                     AppwriteClient.account.createEmailPasswordSession(email, password)
                                 }
                                 
-                                // ۲. دریافت اطلاعات کاربر
+                                // ۲. چک کردن تایید ایمیل
                                 val currentUser = withContext(Dispatchers.IO) {
                                     AppwriteClient.account.get()
                                 }
 
-                                // ۳. ذخیره اطلاعات در FakeData برای نمایش در پروفایل
+                                if (!currentUser.emailVerification) {
+                                    // اگر تایید نشده بود، لینک جدید بفرست و ارور بده
+                                    try {
+                                        withContext(Dispatchers.IO) {
+                                            AppwriteClient.account.createEmailVerification(url = "https://noghte.com/verify")
+                                        }
+                                    } catch (e: Exception) {
+                                        // اگر ارور داد که خیلی زود درخواست دادی، نادیده بگیر
+                                    }
+                                    
+                                    withContext(Dispatchers.IO) {
+                                        AppwriteClient.account.deleteSession("current") // سشن رو ببند
+                                    }
+                                    
+                                    throw Exception("ایمیل شما هنوز تایید نشده است. لینک تایید جدید به ایمیل شما ارسال شد (پوشه اسپم را چک کنید).")
+                                }
+
+                                // ۳. ذخیره اطلاعات
                                 FakeData.currentUser = User(
                                     id = currentUser.id,
                                     name = currentUser.name,
                                     email = currentUser.email,
-                                    role = "VIEWER" // موقتا ویوور، بعدا از دیتابیس خوانده می‌شود
+                                    role = "VIEWER" 
                                 )
 
                                 isLoading = false
                                 onLoginSuccess()
                             } catch (e: Exception) {
                                 isLoading = false
-                                errorMessage = "ایمیل یا رمز عبور اشتباه است."
+                                errorMessage = e.message ?: "ایمیل یا رمز عبور اشتباه است."
                             }
                         }
                     },
@@ -204,7 +217,6 @@ fun LoginScreen(
                 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // چک‌باکس قوانین
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth(),
@@ -219,7 +231,6 @@ fun LoginScreen(
                     Text(text = stringResource(id = R.string.agree_checkbox), fontSize = 14.sp, color = textColor)
                 }
 
-                // لینک قوانین
                 Text(
                     text = stringResource(id = R.string.login_privacy_agree),
                     fontSize = 14.sp,
@@ -233,12 +244,10 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // دکمه ورود مهمان
                 TextButton(onClick = onGuestLogin) {
                     Text(text = "ورود به عنوان مهمان", color = textColor.copy(alpha = 0.7f), fontSize = 14.sp)
                 }
 
-                // دکمه ثبت‌نام
                 TextButton(onClick = onNavigateToRegister) {
                     Text(text = "ثبت‌نام", color = primaryGold, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 }
