@@ -115,10 +115,11 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
+                // ✅ استفاده از stringResource برای برچسب‌ها
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("ایمیل") },
+                    label = { Text(stringResource(id = R.string.email_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryGold, focusedLabelColor = primaryGold),
                     singleLine = true
@@ -129,7 +130,7 @@ fun LoginScreen(
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("رمز عبور") },
+                    label = { Text(stringResource(id = R.string.password_label)) },
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryGold, focusedLabelColor = primaryGold),
@@ -172,7 +173,6 @@ fun LoginScreen(
                                         AppwriteClient.account.deleteSession("current")
                                     }
                                     
-                                    // ✅ متن ارور تغییر کرد
                                     throw Exception("حساب شما هنوز توسط ادمین تایید نشده است. لطفا منتظر بمانید تایید شود.")
                                 }
 
@@ -187,7 +187,14 @@ fun LoginScreen(
                                 onLoginSuccess()
                             } catch (e: Exception) {
                                 isLoading = false
-                                errorMessage = e.message ?: "ایمیل یا رمز عبور اشتباه است."
+                                // ✅ ترجمه ارورهای Appwrite به فارسی/انگلیسی
+                                val msg = e.message ?: ""
+                                errorMessage = when {
+                                    msg.contains("Invalid `email`") || msg.contains("valid email") -> "فرمت ایمیل وارد شده صحیح نیست.\nInvalid email format."
+                                    msg.contains("not verified") || msg.contains("تایید نشده") -> "حساب شما هنوز توسط ادمین تایید نشده است.\nAccount not approved by admin."
+                                    msg.contains("Invalid credentials") || msg.contains("unauthorized") -> "ایمیل یا رمز عبور اشتباه است.\nInvalid credentials."
+                                    else -> msg
+                                }
                             }
                         }
                     },
@@ -206,13 +213,13 @@ fun LoginScreen(
                     if (isLoading) {
                         CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
                     } else {
-                        Text("ورود به نقطه", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(id = R.string.login_button_text), fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     }
                 }
                 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // ✅ بخش قوانین (کلمه قوانین لینک شد و بقیه متن راست‌چین شد)
+                // ✅ جایگاه چک‌باکس و قوانین (دقیقاً بالای دکمه‌ها)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth(),
@@ -223,31 +230,38 @@ fun LoginScreen(
                         onCheckedChange = { isChecked = it },
                         colors = CheckboxDefaults.colors(checkedColor = primaryGold, uncheckedColor = textColor.copy(alpha = 0.5f))
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "قوانین را می‌پذیرم", fontSize = 14.sp, color = textColor)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    
+                    // کلمه "قوانین" کلیک‌پذیر و طلایی
                     Text(
-                        text = " (مشاهده)",
+                        text = stringResource(id = R.string.terms_link),
                         fontSize = 14.sp,
                         color = primaryGold,
                         textDecoration = TextDecoration.Underline,
                         modifier = Modifier.clickable { onNavigateToPrivacy() }
                     )
+                    // ادامه جمله "را می‌پذیرم"
+                    Text(
+                        text = stringResource(id = R.string.terms_suffix),
+                        fontSize = 14.sp,
+                        color = textColor
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // ✅ بخش پایین (دکمه‌های مهمان و ثبت‌نام مرتب شدند)
+                // ✅ دکمه‌های پایین (مهمان و ثبت‌نام)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextButton(onClick = onGuestLogin) {
-                        Text(text = "ورود مهمان", color = textColor.copy(alpha = 0.7f), fontSize = 14.sp)
+                        Text(text = stringResource(id = R.string.guest_login_text), color = textColor.copy(alpha = 0.7f), fontSize = 14.sp)
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     TextButton(onClick = onNavigateToRegister) {
-                        Text(text = "ثبت‌نام", color = primaryGold, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text(text = stringResource(id = R.string.register_button_text), color = primaryGold, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     }
                 }
             }
