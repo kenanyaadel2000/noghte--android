@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -38,7 +39,6 @@ fun RegisterScreen(
     val primaryColor = MaterialTheme.colorScheme.primary
     val textColor = MaterialTheme.colorScheme.onBackground
 
-    // ✅ بعد از نمایش پیام موفقیت، خودکار برمی‌گردد
     LaunchedEffect(successMessage) {
         if (successMessage != null) {
             delay(3000)
@@ -50,7 +50,7 @@ fun RegisterScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("ثبت‌نام در نقطه", color = primaryColor, fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(id = R.string.register_button_text), color = primaryColor, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = primaryColor)
@@ -67,13 +67,13 @@ fun RegisterScreen(
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("ساخت حساب جدید", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = textColor)
+            Text(stringResource(id = R.string.create_account_title), fontSize = 24.sp, fontWeight = FontWeight.Bold, color = textColor)
             Spacer(modifier = Modifier.height(32.dp))
 
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("نام و نام خانوادگی") },
+                label = { Text(stringResource(id = R.string.name_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor, focusedLabelColor = primaryColor)
             )
@@ -82,7 +82,7 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("ایمیل سازمانی") },
+                label = { Text(stringResource(id = R.string.email_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor, focusedLabelColor = primaryColor)
             )
@@ -91,7 +91,7 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("رمز عبور") },
+                label = { Text(stringResource(id = R.string.password_label)) },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor, focusedLabelColor = primaryColor)
@@ -102,7 +102,6 @@ fun RegisterScreen(
                 Text(text = errorMessage!!, color = Color.Red, fontSize = 14.sp, textAlign = TextAlign.Center)
             }
 
-            // ✅ پیام موفقیت (بدون پس‌زمینه سبز، فقط متن سبز)
             if (successMessage != null) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
@@ -119,7 +118,7 @@ fun RegisterScreen(
             Button(
                 onClick = { 
                     if (email.isBlank() || password.isBlank() || name.isBlank()) {
-                        errorMessage = "لطفاً همه فیلدها را پر کنید."
+                        errorMessage = "لطفاً همه فیلدها را پر کنید.\nPlease fill all fields."
                         return@Button
                     }
                     
@@ -178,10 +177,12 @@ fun RegisterScreen(
                             
                         } catch (e: Exception) {
                             isLoading = false
-                            if (e.message?.contains("already exists") == true) {
-                                errorMessage = "This email is already registered. Please login."
-                            } else {
-                                errorMessage = "خطا در ثبت‌نام: ${e.message}"
+                            // ✅ ترجمه ارور ثبت‌نام
+                            val msg = e.message ?: ""
+                            errorMessage = when {
+                                msg.contains("already exists") -> "این ایمیل قبلاً ثبت‌نام کرده است.\nThis email is already registered."
+                                msg.contains("Invalid `email`") || msg.contains("valid email") -> "فرمت ایمیل وارد شده صحیح نیست.\nInvalid email format."
+                                else -> msg
                             }
                         }
                     }
@@ -194,7 +195,7 @@ fun RegisterScreen(
                 if (isLoading) {
                     CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
                 } else {
-                    Text("ثبت‌نام", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(id = R.string.register_button_text), fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
