@@ -19,8 +19,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -178,9 +178,6 @@ fun ResourcesTab(
     }
 }
 
-// بقیه توابع (ResourceCard, LogsTab, ProfileTab) بدون تغییر باقی می‌مونن، 
-// اما برای اینکه کد کامل باشه، اینجا می‌ذارمشون:
-
 @Composable
 fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, textColor: Color, onClick: () -> Unit) {
     Card(
@@ -252,7 +249,6 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
         modifier = Modifier.fillMaxSize().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // ... (بخش آواتار و کارت اطلاعات بدون تغییر می‌مونه) ...
         Box(
             modifier = Modifier.size(100.dp).clip(CircleShape).background(primaryColor.copy(alpha = 0.2f)),
             contentAlignment = Alignment.Center
@@ -262,8 +258,9 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        Text(text = stringResource(id = R.string.profile_name), fontSize = 22.sp, fontWeight = FontWeight.Bold, color = textColor)
-        Text(text = stringResource(id = R.string.profile_email), fontSize = 14.sp, color = textColor.copy(alpha = 0.6f))
+        // ✅ نمایش نام، ایمیل و نقش واقعی از FakeData.currentUser
+        Text(text = FakeData.currentUser.name, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = textColor)
+        Text(text = FakeData.currentUser.email, fontSize = 14.sp, color = textColor.copy(alpha = 0.6f))
         
         Spacer(modifier = Modifier.height(32.dp))
         
@@ -275,7 +272,8 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
             Column(modifier = Modifier.padding(16.dp)) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(text = stringResource(id = R.string.profile_role_label), color = textColor.copy(alpha = 0.6f))
-                    Text(text = stringResource(id = R.string.profile_role_value), fontWeight = FontWeight.Bold, color = primaryColor)
+                    // ✅ نمایش نقش واقعی
+                    Text(text = FakeData.currentUser.role, fontWeight = FontWeight.Bold, color = primaryColor)
                 }
                 Divider(modifier = Modifier.padding(vertical = 12.dp), color = textColor.copy(alpha = 0.1f))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -292,10 +290,13 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
                 scope.launch {
                     try {
                         withContext(Dispatchers.IO) {
-                            AppwriteClient.account.deleteSession("current") // بستن سشن واقعی
+                            // ✅ اگر کاربر مهمان نبود، سشن واقعی Appwrite رو ببند
+                            if (FakeData.currentUser.id != "guest") {
+                                AppwriteClient.account.deleteSession("current")
+                            }
                         }
                     } catch (e: Exception) {
-                        // اگر ارور هم داد، باز هم کاربر رو ببریم بیرون
+                        // در صورت خطا، باز هم از برنامه خارج شو
                     } finally {
                         onLogout()
                     }
