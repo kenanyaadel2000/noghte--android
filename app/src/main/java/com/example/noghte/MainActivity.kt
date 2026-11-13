@@ -5,34 +5,32 @@ import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.sp
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AppwriteClient.init(applicationContext)
-        // شروع اتصال به Appwrit
         
+        // ۱. شروع اتصال به Appwrite
+        AppwriteClient.init(applicationContext)
+
+        // ۲. خواندن تنظیمات ذخیره شده (زبان، تم و وضعیت لاگین)
         val prefs = getSharedPreferences("NoghtePrefs", Context.MODE_PRIVATE)
         val isLoggedIn = prefs.getBoolean("IS_LOGGED_IN", false)
         val appLanguage = prefs.getString("APP_LANG", "fa") ?: "fa"
         
+        // ۳. اعمال زبان
         val locale = Locale(appLanguage)
         Locale.setDefault(locale)
         val config = Configuration()
@@ -41,23 +39,24 @@ class MainActivity : ComponentActivity() {
         baseContext.resources.updateConfiguration(config, baseContext.resources.displayMetrics)
 
         setContent {
-            // وضعیت تم (پیش‌فرض تیره است)
+            // ۴. وضعیت تم (پیش‌فرض تیره است)
             var isDarkTheme by remember { mutableStateOf(prefs.getBoolean("IS_DARK_THEME", true)) }
 
+            // ۵. تعیین جهت چیدمان (راست‌چین یا چپ‌چین) بر اساس زبان
             val layoutDirection = if (appLanguage == "fa") LayoutDirection.Rtl else LayoutDirection.Ltr
 
-            // تعریف پالت رنگی تیره
+            // 🎨 تعریف پالت رنگی تیره (همون تم فعلی)
             val darkColors = darkColorScheme(
-                primary = Color(0xFFD4AF37),
+                primary = Color(0xFFD4AF37), // طلایی
                 background = Color(0xFF121212),
                 surface = Color(0xFF1E1E1E),
                 onBackground = Color.White,
                 onSurface = Color.White
             )
 
-            // تعریف پالت رنگی روشن
+            // 🎨 تعریف پالت رنگی روشن
             val lightColors = lightColorScheme(
-                primary = Color(0xFFD4AF37),
+                primary = Color(0xFFD4AF37), // طلایی
                 background = Color(0xFFF9F9F9),
                 surface = Color.White,
                 onBackground = Color.Black,
@@ -92,33 +91,15 @@ fun AppNavigation(
 ) {
     val context = LocalContext.current
     val prefs = context.getSharedPreferences("NoghtePrefs", Context.MODE_PRIVATE)
+    
+    // وضعیت صفحه فعلی
     var currentScreen by remember { mutableStateOf(if (isAlreadyLoggedIn) "home" else "login") }
+    
+    // متغیرهای موقت برای نگه داشتن اطلاعات بین صفحه‌ها
     var selectedResourceId by remember { mutableStateOf<String?>(null) }
-    // این متغیرها باید بالای تابع AppNavigation باشن
     var pendingUserEmail by remember { mutableStateOf("") }
-    // ...
 
-    when (currentScreen) {
-        // ...
-        
-        "register" -> {
-            RegisterScreen(
-                onBackClick = { currentScreen = "login" },
-                onNavigateToEmailSent = { email ->
-                    pendingUserEmail = email
-                    currentScreen = "email_sent" // ✅ هدایت به صفحه پیام
-                }
-            )
-        }
-        "email_sent" -> {
-            EmailSentScreen(
-                email = pendingUserEmail,
-                onBackToLogin = { currentScreen = "login" } // برگشت به لاگین
-            )
-        }
-        
-        // ...
-    }
+    // تابع تغییر زبان
     val changeLanguage: () -> Unit = {
         val currentLang = prefs.getString("APP_LANG", "fa")
         val newLang = if (currentLang == "fa") "en" else "fa"
@@ -134,35 +115,56 @@ fun AppNavigation(
         (context as? ComponentActivity)?.recreate()
     }
 
+    // تابع تغییر تم
     val toggleTheme: () -> Unit = {
         onThemeChange(!isDarkTheme)
     }
 
+    // ناوبری بین صفحات
     when (currentScreen) {
         "login" -> {
-    LoginScreen(
-        isDarkTheme = isDarkTheme,
-        onLoginSuccess = {
-            prefs.edit().putBoolean("IS_LOGGED_IN", true).apply()
-            currentScreen = "home"
-        },
-        onNavigateToPrivacy = { currentScreen = "privacy" },
-        onLanguageChange = changeLanguage,
-        onThemeToggle = toggleTheme,
-        onNavigateToRegister = { currentScreen = "register" },
-        onGuestLogin = {
-            // ✅ ورود مهمان: به عنوان یک کاربر ویوور فیک ست میشه
-            FakeData.currentUser = User("guest", "کاربر مهمان", "guest@noghte.com", "VIEWER")
-            currentScreen = "home"
+            LoginScreen(
+                isDarkTheme = isDarkTheme,
+                onLoginSuccess = {
+                    prefs.edit().putBoolean("IS_LOGGED_IN", true).apply()
+                    currentScreen = "home"
+                },
+                onNavigateToPrivacy = { currentScreen = "privacy" },
+                onLanguageChange = changeLanguage,
+                onThemeToggle = toggleTheme,
+                onNavigateToRegister = { currentScreen = "register" },
+                onGuestLogin = {
+                    // ورود مهمان: کاربر فیک VIEWER
+                    FakeData.currentUser = User("guest", "کاربر مهمان", "guest@noghte.com", "VIEWER")
+                    prefs.edit().putBoolean("IS_LOGGED_IN", true).apply()
+                    currentScreen = "home"
+                }
+            )
         }
-    )
-}
+        
         "register" -> {
-            RegisterScreen(onBackClick = { currentScreen = "login" }) // ✅ صفحه ثبت نام
+            RegisterScreen(
+                onBackClick = { currentScreen = "login" },
+                onNavigateToEmailSent = { email ->
+                    pendingUserEmail = email
+                    currentScreen = "email_sent"
+                }
+            )
         }
+        
+        "email_sent" -> {
+            EmailSentScreen(
+                email = pendingUserEmail,
+                onBackToLogin = { currentScreen = "login" }
+            )
+        }
+        
         "privacy" -> {
-            PrivacyScreen(onBackClick = { currentScreen = "login" })
+            PrivacyScreen(
+                onBackClick = { currentScreen = "login" }
+            )
         }
+        
         "home" -> {
             ResourceListScreen(
                 isDarkTheme = isDarkTheme,
@@ -173,11 +175,13 @@ fun AppNavigation(
                     currentScreen = "detail"
                 },
                 onLogout = {
+                    // پاک کردن وضعیت لاگین و رفتن به صفحه ورود
                     prefs.edit().putBoolean("IS_LOGGED_IN", false).apply()
                     currentScreen = "login"
                 }
             )
         }
+        
         "settings" -> {
             SettingsScreen(
                 isDarkTheme = isDarkTheme,
@@ -186,6 +190,7 @@ fun AppNavigation(
                 onBackClick = { currentScreen = "home" }
             )
         }
+        
         "detail" -> {
             ResourceDetailScreen(
                 resourceId = selectedResourceId ?: "",
