@@ -38,4 +38,9 @@
     <string name="error_user_exists">This email is already registered.</string>
     <string name="error_empty_fields">Please fill all fields.</string>
     <string name="register_success_msg">Registration successful. Activated after admin approval.</string>
+
+    <!-- ✅ این سه کلمه اضافه شدند -->
+    <string name="settings_title">Settings</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="light_mode">Light Mode</string>
 </resources>
