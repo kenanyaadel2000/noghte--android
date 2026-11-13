@@ -22,7 +22,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun RegisterScreen(
     onBackClick: () -> Unit,
-    onNavigateToEmailSent: (String) -> Unit // ✅ این پارامتر اضافه شد
+    onNavigateToEmailSent: (String) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -114,14 +114,15 @@ fun RegisterScreen(
                                 )
                             }
 
-                            // ۲. لاگین موقت
+                            // ۲. لاگین موقت برای دسترسی به متد ارسال ایمیل
                             withContext(Dispatchers.IO) {
                                 AppwriteClient.account.createEmailPasswordSession(email, password)
                             }
 
-                            // ۳. ارسال ایمیل تایید
+                            // ۳. ارسال لینک تایید
+                            // ✅ تغییر به createVerification برای نسخه اندروید
                             withContext(Dispatchers.IO) {
-                                AppwriteClient.account.createEmailVerification(url = "https://noghte.com/verify")
+                                AppwriteClient.account.createVerification(url = "https://noghte.com/verify")
                             }
 
                             // ۴. ذخیره در دیتابیس
@@ -144,7 +145,7 @@ fun RegisterScreen(
                             }
 
                             isLoading = false
-                            onNavigateToEmailSent(email) 
+                            onNavigateToEmailSent(email)
                             
                         } catch (e: Exception) {
                             isLoading = false
