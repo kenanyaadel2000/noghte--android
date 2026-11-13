@@ -8,17 +8,6 @@
     <string name="agree_checkbox">قوانین را می‌پذیرم</string>
     <string name="back_button">بازگشت</string>
     <string name="change_language">تغییر زبان</string>
-        <!-- Profile -->
-    <string name="profile_name">علی محمدی</string>
-    <string name="profile_email">ali.mohammadi@company.com</string>
-    <string name="profile_role_label">نقش</string>
-    <string name="profile_role_value">viewer, analyst</string>
-    <string name="profile_org_label">سازمان</string>
-    <string name="profile_org_value">Noghte Security</string>
-    <string name="logout_button">خروج از حساب</string>
-    <string name="theme_toggle">تغییر تم</string>
-    <string name="language_toggle">تغییر زبان</string>
-    <!-- New Strings for Resources -->
     <string name="resources_title">منابع</string>
     <string name="search_placeholder">جستجوی منبع...</string>
     <string name="tab_resources">منابع</string>
@@ -27,10 +16,13 @@
     <string name="access_read">خواندن</string>
     <string name="access_full">دسترسی کامل</string>
     <string name="coming_soon">به زودی...</string>
-    <string name="settings_title">تنظیمات</string>
-    <string name="dark_mode">حالت تاریک (Dark Mode)</string>
-    <string name="light_mode">حالت روشن (Light Mode)</string>
-    <!-- Login & Register Text -->
+    <string name="profile_name">علی محمدی</string>
+    <string name="profile_email">ali.mohammadi@company.com</string>
+    <string name="profile_role_label">نقش</string>
+    <string name="profile_role_value">viewer, analyst</string>
+    <string name="profile_org_label">سازمان</string>
+    <string name="profile_org_value">Noghte Security</string>
+    <string name="logout_button">خروج از حساب</string>
     <string name="email_label">ایمیل</string>
     <string name="password_label">رمز عبور</string>
     <string name="name_label">نام و نام خانوادگی</string>
@@ -40,12 +32,10 @@
     <string name="terms_link">قوانین</string>
     <string name="terms_suffix"> را می‌پذیرم</string>
     <string name="create_account_title">ساخت حساب جدید</string>
-
-<!-- Error & Success Messages -->
     <string name="error_invalid_email">فرمت ایمیل وارد شده صحیح نیست.</string>
     <string name="error_not_verified">حساب شما هنوز توسط ادمین تایید نشده است. لطفا منتظر بمانید.</string>
     <string name="error_invalid_credentials">ایمیل یا رمز عبور اشتباه است.</string>
     <string name="error_user_exists">این ایمیل قبلاً ثبت‌نام کرده است.</string>
     <string name="error_empty_fields">لطفاً همه فیلدها را پر کنید.</string>
     <string name="register_success_msg">ثبت‌نام انجام شد. بعد از تایید ادمین حساب شما فعال می‌شود.</string>
-    </resources>
+</resources>
