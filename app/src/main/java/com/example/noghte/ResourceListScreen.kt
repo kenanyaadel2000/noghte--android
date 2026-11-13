@@ -243,10 +243,13 @@ fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
 
 @Composable
 fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLogout: () -> Unit) {
+    val scope = rememberCoroutineScope()
+
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // ... (بخش آواتار و کارت اطلاعات بدون تغییر می‌مونه) ...
         Box(
             modifier = Modifier.size(100.dp).clip(CircleShape).background(primaryColor.copy(alpha = 0.2f)),
             contentAlignment = Alignment.Center
@@ -282,7 +285,19 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
         Spacer(modifier = Modifier.weight(1f))
         
         Button(
-            onClick = onLogout,
+            onClick = {
+                scope.launch {
+                    try {
+                        withContext(Dispatchers.IO) {
+                            AppwriteClient.account.deleteSession("current") // بستن سشن واقعی
+                        }
+                    } catch (e: Exception) {
+                        // اگر ارور هم داد، باز هم کاربر رو ببریم بیرون
+                    } finally {
+                        onLogout()
+                    }
+                }
+            },
             modifier = Modifier.fillMaxWidth().height(50.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F), contentColor = Color.White),
             shape = RoundedCornerShape(12.dp)
