@@ -29,8 +29,6 @@
     <string name="login_button_text">ورود به نقطه</string>
     <string name="register_button_text">ثبت‌نام</string>
     <string name="guest_login_text">ورود مهمان</string>
-    <string name="terms_link">قوانین</string>
-    <string name="terms_suffix"> را می‌پذیرم</string>
     <string name="create_account_title">ساخت حساب جدید</string>
     <string name="error_invalid_email">فرمت ایمیل وارد شده صحیح نیست.</string>
     <string name="error_not_verified">حساب شما هنوز توسط ادمین تایید نشده است. لطفا منتظر بمانید.</string>
@@ -38,9 +36,12 @@
     <string name="error_user_exists">این ایمیل قبلاً ثبت‌نام کرده است.</string>
     <string name="error_empty_fields">لطفاً همه فیلدها را پر کنید.</string>
     <string name="register_success_msg">ثبت‌نام انجام شد. بعد از تایید ادمین حساب شما فعال می‌شود.</string>
-    
-    <!-- ✅ این سه کلمه اضافه شدند -->
     <string name="settings_title">تنظیمات</string>
     <string name="dark_mode">حالت تاریک (Dark Mode)</string>
     <string name="light_mode">حالت روشن (Light Mode)</string>
+    
+    <!-- کلمات مربوط به قوانین -->
+    <string name="terms_link">قوانین</string>
+    <string name="terms_suffix"> را می‌پذیرم</string>
+    <string name="terms_prefix"></string>
 </resources>
