@@ -164,20 +164,20 @@ fun LoginScreen(
                                 }
 
                                 if (!currentUser.emailVerification) {
-                                    // اگر تایید نشده بود، لینک جدید بفرست و ارور بده
                                     try {
+                                        // ✅ تغییر به createVerification برای نسخه اندروید
                                         withContext(Dispatchers.IO) {
-                                            AppwriteClient.account.createEmailVerification(url = "https://noghte.com/verify")
+                                            AppwriteClient.account.createVerification(url = "https://noghte.com/verify")
                                         }
                                     } catch (e: Exception) {
-                                        // اگر ارور داد که خیلی زود درخواست دادی، نادیده بگیر
+                                        // اگر ارور داد که زود درخواست دادی، نادیده بگیر
                                     }
                                     
                                     withContext(Dispatchers.IO) {
-                                        AppwriteClient.account.deleteSession("current") // سشن رو ببند
+                                        AppwriteClient.account.deleteSession("current")
                                     }
                                     
-                                    throw Exception("ایمیل شما هنوز تایید نشده است. لینک تایید جدید به ایمیل شما ارسال شد (پوشه اسپم را چک کنید).")
+                                    throw Exception("ایمیل شما هنوز تایید نشده است. لینک جدید ارسال شد (اسپم را چک کنید).")
                                 }
 
                                 // ۳. ذخیره اطلاعات
