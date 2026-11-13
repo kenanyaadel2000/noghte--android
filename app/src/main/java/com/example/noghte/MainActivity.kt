@@ -94,7 +94,31 @@ fun AppNavigation(
     val prefs = context.getSharedPreferences("NoghtePrefs", Context.MODE_PRIVATE)
     var currentScreen by remember { mutableStateOf(if (isAlreadyLoggedIn) "home" else "login") }
     var selectedResourceId by remember { mutableStateOf<String?>(null) }
+    // این متغیرها باید بالای تابع AppNavigation باشن
+    var pendingUserEmail by remember { mutableStateOf("") }
+    // ...
 
+    when (currentScreen) {
+        // ...
+        
+        "register" -> {
+            RegisterScreen(
+                onBackClick = { currentScreen = "login" },
+                onNavigateToEmailSent = { email ->
+                    pendingUserEmail = email
+                    currentScreen = "email_sent" // ✅ هدایت به صفحه پیام
+                }
+            )
+        }
+        "email_sent" -> {
+            EmailSentScreen(
+                email = pendingUserEmail,
+                onBackToLogin = { currentScreen = "login" } // برگشت به لاگین
+            )
+        }
+        
+        // ...
+    }
     val changeLanguage: () -> Unit = {
         val currentLang = prefs.getString("APP_LANG", "fa")
         val newLang = if (currentLang == "fa") "en" else "fa"
