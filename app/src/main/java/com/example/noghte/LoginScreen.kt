@@ -18,14 +18,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalContext // ✅ اضافه شد
+import androidx.compose.ui.platform.LocalLayoutDirection // ✅ اضافه شد
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.LayoutDirection // ✅ اضافه شد
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +46,9 @@ fun LoginScreen(
     val primaryGold = MaterialTheme.colorScheme.primary
     val backgroundColor = MaterialTheme.colorScheme.background
     val textColor = MaterialTheme.colorScheme.onBackground
+    
+    // ✅ گرفتن کانتکست برای استفاده از رشته‌ها در پس‌زمینه
+    val context = LocalContext.current 
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -148,7 +152,8 @@ fun LoginScreen(
                 Button(
                     onClick = { 
                         if (email.isBlank() || password.isBlank()) {
-                            errorMessage = stringResource(id = R.string.error_empty_fields)
+                            // ✅ استفاده از context به جای stringResource
+                            errorMessage = context.getString(R.string.error_empty_fields) 
                             return@Button
                         }
                         isLoading = true
@@ -174,7 +179,8 @@ fun LoginScreen(
                                         AppwriteClient.account.deleteSession("current")
                                     }
                                     
-                                    throw Exception(stringResource(id = R.string.error_not_verified))
+                                    // ✅ استفاده از context
+                                    throw Exception(context.getString(R.string.error_not_verified))
                                 }
 
                                 FakeData.currentUser = User(
@@ -190,9 +196,10 @@ fun LoginScreen(
                                 isLoading = false
                                 val msg = e.message ?: ""
                                 errorMessage = when {
-                                    msg.contains("Invalid `email`") || msg.contains("valid email") -> stringResource(id = R.string.error_invalid_email)
-                                    msg.contains("not verified") -> stringResource(id = R.string.error_not_verified)
-                                    msg.contains("Invalid credentials") || msg.contains("unauthorized") -> stringResource(id = R.string.error_invalid_credentials)
+                                    // ✅ استفاده از context
+                                    msg.contains("Invalid `email`") || msg.contains("valid email") -> context.getString(R.string.error_invalid_email)
+                                    msg.contains("not verified") -> context.getString(R.string.error_not_verified)
+                                    msg.contains("Invalid credentials") || msg.contains("unauthorized") -> context.getString(R.string.error_invalid_credentials)
                                     else -> msg
                                 }
                             }
