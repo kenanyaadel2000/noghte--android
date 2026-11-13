@@ -1,6 +1,5 @@
 package com.example.noghte
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -17,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.appwrite.ID
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -31,14 +31,20 @@ fun RegisterScreen(
     var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     
-    // پیام خطا (قرمز)
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    // پیام موفقیت (سبز)
     var successMessage by remember { mutableStateOf<String?>(null) }
     
     val scope = rememberCoroutineScope()
     val primaryColor = MaterialTheme.colorScheme.primary
     val textColor = MaterialTheme.colorScheme.onBackground
+
+    // ✅ بعد از نمایش پیام موفقیت، خودکار برمی‌گردد
+    LaunchedEffect(successMessage) {
+        if (successMessage != null) {
+            delay(3000)
+            onBackClick()
+        }
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -88,33 +94,24 @@ fun RegisterScreen(
                 label = { Text("رمز عبور") },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
-                // ✅ اینجا نقطه جا افتاده بود که اصلاح شد
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor, focusedLabelColor = primaryColor)
             )
 
-            // نمایش پیام خطا (قرمز)
             if (errorMessage != null) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(text = errorMessage!!, color = Color.Red, fontSize = 14.sp, textAlign = TextAlign.Center)
             }
 
-            // نمایش پیام موفقیت (سبز)
+            // ✅ پیام موفقیت (بدون پس‌زمینه سبز، فقط متن سبز)
             if (successMessage != null) {
                 Spacer(modifier = Modifier.height(16.dp))
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50).copy(alpha = 0.2f)),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = successMessage!!,
-                        color = Color(0xFF4CAF50), // رنگ سبز
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(12.dp)
-                    )
-                }
+                Text(
+                    text = successMessage!!,
+                    color = Color(0xFF4CAF50),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -132,17 +129,13 @@ fun RegisterScreen(
                     
                     scope.launch {
                         try {
-                            // ۰. اگر سشنی از قبل باز مانده، پاکش کن
                             try {
                                 withContext(Dispatchers.IO) {
                                     AppwriteClient.account.deleteSession("current")
                                 }
-                            } catch (e: Exception) {
-                                // اگر سشنی نبود، ارور نده
-                            }
+                            } catch (e: Exception) {}
 
-                            // ۱. ساخت کاربر
-                            val newUser = withContext(Dispatchers.IO) {
+                            withContext(Dispatchers.IO) {
                                 AppwriteClient.account.create(
                                     userId = ID.unique(),
                                     email = email,
@@ -151,21 +144,16 @@ fun RegisterScreen(
                                 )
                             }
 
-                            // ۲. لاگین موقت برای ارسال ایمیل
                             withContext(Dispatchers.IO) {
                                 AppwriteClient.account.createEmailPasswordSession(email, password)
                             }
 
-                            // ۳. ارسال لینک تایید
                             try {
                                 withContext(Dispatchers.IO) {
                                     AppwriteClient.account.createVerification(url = "https://noghte.com/verify")
                                 }
-                            } catch (e: Exception) {
-                                // اگر ارسال ایمیل خطا داد، نادیده بگیر
-                            }
+                            } catch (e: Exception) {}
 
-                            // ۴. ذخیره در دیتابیس
                             try {
                                 withContext(Dispatchers.IO) {
                                     AppwriteClient.databases.createDocument(
@@ -179,24 +167,17 @@ fun RegisterScreen(
                                         )
                                     )
                                 }
-                            } catch (e: Exception) {
-                                // اگر دیتابیس ارور داد، ثبت‌نام متوقف نشود
-                            }
+                            } catch (e: Exception) {}
 
-                            // ۵. لاگ اوت کردن
                             withContext(Dispatchers.IO) {
                                 AppwriteClient.account.deleteSession("current")
                             }
 
                             isLoading = false
-                            
-                            // ✅ نمایش پیام موفقیت دوزبانه
-                            successMessage = "Registration successful. Your account will be activated after admin approval.\nثبت‌نام انجام شد. بعد از تایید ادمین حساب شما فعال می‌شود."
+                            successMessage = "ثبت‌نام انجام شد. بعد از تایید ادمین حساب شما فعال می‌شود.\nRegistration successful. Activated after admin approval."
                             
                         } catch (e: Exception) {
                             isLoading = false
-                            
-                            // اگر ارور مربوط به تکراری بودن ایمیل بود، پیام مناسب بده
                             if (e.message?.contains("already exists") == true) {
                                 errorMessage = "This email is already registered. Please login."
                             } else {
