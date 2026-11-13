@@ -226,15 +226,20 @@ fun LoginScreen(
                 val layoutDir = LocalLayoutDirection.current
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    // ❌ fillMaxWidth حذف شد تا کاملاً به هم بچسبن
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
+                    // کوچک کردن مربع تا حاشیه نامرئی آن کمتر شود
                     Checkbox(
                         checked = isChecked,
                         onCheckedChange = { isChecked = it },
+                        modifier = Modifier.size(24.dp), 
                         colors = CheckboxDefaults.colors(checkedColor = primaryGold, uncheckedColor = textColor.copy(alpha = 0.5f))
                     )
                     
+                    // فاصله خیلی کم
+                    Spacer(modifier = Modifier.width(4.dp))
+
                     if (layoutDir == LayoutDirection.Rtl) {
                         // فارسی: [قوانین] را می‌پذیرم
                         Text(
@@ -256,6 +261,7 @@ fun LoginScreen(
                             fontSize = 14.sp,
                             color = textColor
                         )
+                        Spacer(modifier = Modifier.width(4.dp)) // فاصله بین the و rules
                         Text(
                             text = stringResource(id = R.string.terms_link),
                             fontSize = 14.sp,
