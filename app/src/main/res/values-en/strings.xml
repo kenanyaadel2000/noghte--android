@@ -8,18 +8,6 @@
     <string name="agree_checkbox">I accept the terms</string>
     <string name="back_button">Back</string>
     <string name="change_language">Change Language</string>
-        <!-- Profile -->
-    <string name="theme_toggle">Toggle Theme</string>
-    <string name="language_toggle">Change Language</string>
-    <string name="profile_name">Ali Mohammadi</string>
-    <string name="profile_email">ali.mohammadi@company.com</string>
-    <string name="profile_role_label">Role</string>
-    <string name="profile_role_value">viewer, analyst</string>
-    <string name="profile_org_label">Organization</string>
-    <string name="profile_org_value">Noghte Security</string>
-    <string name="logout_button">Logout</string>
-
-    <!-- New Strings for Resources -->
     <string name="resources_title">Resources</string>
     <string name="search_placeholder">Search resources...</string>
     <string name="tab_resources">Resources</string>
@@ -28,11 +16,13 @@
     <string name="access_read">Read</string>
     <string name="access_full">Full Access</string>
     <string name="coming_soon">Coming soon...</string>
-    <string name="settings_title">Settings</string>
-    <string name="dark_mode">Dark Mode</string>
-    <string name="light_mode">Light Mode</string>
-</resources>
-    <!-- Login & Register Text -->
+    <string name="profile_name">Ali Mohammadi</string>
+    <string name="profile_email">ali.mohammadi@company.com</string>
+    <string name="profile_role_label">Role</string>
+    <string name="profile_role_value">viewer, analyst</string>
+    <string name="profile_org_label">Organization</string>
+    <string name="profile_org_value">Noghte Security</string>
+    <string name="logout_button">Logout</string>
     <string name="email_label">Email</string>
     <string name="password_label">Password</string>
     <string name="name_label">Full Name</string>
@@ -42,11 +32,10 @@
     <string name="terms_link">rules</string>
     <string name="terms_suffix"> I accept</string>
     <string name="create_account_title">Create New Account</string>
-
-<!-- Error & Success Messages -->
     <string name="error_invalid_email">Invalid email format.</string>
     <string name="error_not_verified">Your account has not been approved by the admin yet. Please wait.</string>
     <string name="error_invalid_credentials">Invalid email or password.</string>
     <string name="error_user_exists">This email is already registered.</string>
     <string name="error_empty_fields">Please fill all fields.</string>
     <string name="register_success_msg">Registration successful. Activated after admin approval.</string>
+</resources>
