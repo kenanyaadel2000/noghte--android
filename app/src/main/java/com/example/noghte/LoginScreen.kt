@@ -230,7 +230,7 @@ fun LoginScreen(
                         onCheckedChange = { isChecked = it },
                         colors = CheckboxDefaults.colors(checkedColor = primaryGold, uncheckedColor = textColor.copy(alpha = 0.5f))
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
                     
                     // کلمه "قوانین" کلیک‌پذیر و طلایی
                     Text(
