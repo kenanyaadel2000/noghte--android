@@ -20,7 +20,10 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(onBackClick: () -> Unit) {
+fun RegisterScreen(
+    onBackClick: () -> Unit,
+    onNavigateToEmailSent: (String) -> Unit // ✅ این پارامتر اضافه شد
+) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -73,7 +76,6 @@ fun RegisterScreen(onBackClick: () -> Unit) {
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // فیلد جدید پسورد
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -102,7 +104,7 @@ fun RegisterScreen(onBackClick: () -> Unit) {
                     
                     scope.launch {
                         try {
-                            // ثبت نام در Appwrite
+                            // ۱. ساخت کاربر
                             val newUser = withContext(Dispatchers.IO) {
                                 AppwriteClient.account.create(
                                     userId = ID.unique(),
@@ -111,9 +113,39 @@ fun RegisterScreen(onBackClick: () -> Unit) {
                                     name = name
                                 )
                             }
-                            // در صورت موفقیت، برگرد به لاگین
+
+                            // ۲. لاگین موقت
+                            withContext(Dispatchers.IO) {
+                                AppwriteClient.account.createEmailPasswordSession(email, password)
+                            }
+
+                            // ۳. ارسال ایمیل تایید
+                            withContext(Dispatchers.IO) {
+                                AppwriteClient.account.createEmailVerification(url = "https://noghte.com/verify")
+                            }
+
+                            // ۴. ذخیره در دیتابیس
+                            withContext(Dispatchers.IO) {
+                                AppwriteClient.databases.createDocument(
+                                    databaseId = AppwriteClient.DATABASE_ID,
+                                    collectionId = AppwriteClient.TABLE_ID,
+                                    documentId = ID.unique(),
+                                    data = mapOf(
+                                        "name" to name,
+                                        "email" to email,
+                                        "role" to "VIEWER"
+                                    )
+                                )
+                            }
+
+                            // ۵. لاگ اوت کردن
+                            withContext(Dispatchers.IO) {
+                                AppwriteClient.account.deleteSession("current")
+                            }
+
                             isLoading = false
-                            onBackClick()
+                            onNavigateToEmailSent(email) 
+                            
                         } catch (e: Exception) {
                             isLoading = false
                             errorMessage = "خطا در ثبت‌نام: ${e.message}"
