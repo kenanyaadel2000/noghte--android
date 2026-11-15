@@ -40,7 +40,13 @@ fun ResourceDetailScreen(
         containerColor = backgroundColor,
         topBar = {
             TopAppBar(
-                title = { Text(text = resource?.name ?: "Not Found", color = primaryColor, fontWeight = FontWeight.Bold) },
+                title = { 
+                    Text(
+                        text = if (resource != null) stringResource(id = resource.nameRes) else "Not Found", 
+                        color = primaryColor, 
+                        fontWeight = FontWeight.Bold
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = primaryColor)
@@ -84,7 +90,12 @@ fun ResourceDetailScreen(
                         }
                         Spacer(modifier = Modifier.width(16.dp))
                         Column {
-                            Text(text = resource.name, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = textColor)
+                            Text(
+                                text = stringResource(id = resource.nameRes), 
+                                fontSize = 20.sp, 
+                                fontWeight = FontWeight.Bold, 
+                                color = textColor
+                            )
                             Text(text = resource.type, fontSize = 14.sp, color = primaryColor)
                         }
                     }
@@ -96,7 +107,7 @@ fun ResourceDetailScreen(
                 Text(text = "توضیحات", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = textColor)
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = resource.description,
+                    text = stringResource(id = resource.descRes),
                     fontSize = 15.sp,
                     color = textColor.copy(alpha = 0.8f),
                     lineHeight = 24.sp
