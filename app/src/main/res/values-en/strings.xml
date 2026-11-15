@@ -28,7 +28,13 @@
     <string name="terms_suffix"></string>
     
     <!-- کلمات قبلی را نگه دار و این‌ها را اضافه کن -->
-    
+    <!-- Admin Panel -->
+    <string name="admin_panel_title">Admin Panel</string>
+    <string name="admin_panel_button">Enter Admin Panel</string>
+    <string name="users_list_title">System Users List</string>
+    <string name="role_updated_success">User role updated successfully.</string>
+    <string name="role_update_error">Error updating user role.</string>
+    <string name="loading_users">Loading users list...</string>
     <!-- Resource Names & Descriptions -->
     <string name="res_fin_name">Financial API</string>
     <string name="res_fin_desc">Access to the financial API for reporting and transactions. This API allows fetching financial reports, viewing transactions, and managing accounts.</string>
