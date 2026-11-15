@@ -41,47 +41,16 @@ fun ResourceListScreen(
     var isSearchActive by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
 
-    val filteredResources = if (searchQuery.isEmpty()) {
-        FakeData.resources
-    } else {
-        FakeData.resources.filter { 
-            // چون اسم منابع الان به صورت String Resource هست، برای جستجو باید با context تبدیلش کنیم
-            // فعلاً برای سادگی فقط بر اساس ID یا اسم فیک جستجو میکنیم
-            it.nameRes.toString().contains(searchQuery, ignoreCase = true) 
-        }
-    }
+    val filteredResources = if (searchQuery.isEmpty()) FakeData.resources else FakeData.resources.filter { it.nameRes.toString().contains(searchQuery, ignoreCase = true) }
 
     Scaffold(
         containerColor = backgroundColor,
         topBar = {
             if (isSearchActive) {
                 TopAppBar(
-                    title = {
-                        TextField(
-                            value = searchQuery,
-                            onValueChange = { searchQuery = it },
-                            placeholder = { Text(stringResource(id = R.string.search_placeholder)) },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                focusedTextColor = textColor,
-                                unfocusedTextColor = textColor
-                            ),
-                            singleLine = true
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { 
-                            isSearchActive = false 
-                            searchQuery = ""
-                        }) {
-                            Icon(Icons.Default.Close, contentDescription = "Close", tint = primaryColor)
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = backgroundColor)
+                    title = { TextField(value = searchQuery, onValueChange = { searchQuery = it }, placeholder = { Text(stringResource(id = R.string.search_placeholder)) }, modifier = Modifier.fillMaxWidth(), colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent, unfocusedContainerColor = Color.Transparent, focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent, focusedTextColor = Color.White, unfocusedTextColor = Color.White), singleLine = true) },
+                    navigationIcon = { IconButton(onClick = { isSearchActive = false; searchQuery = "" }) { Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.White) } },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = primaryColor)
                 )
             } else {
                 TopAppBar(
@@ -91,53 +60,40 @@ fun ResourceListScreen(
                             1 -> stringResource(id = R.string.tab_logs)
                             else -> stringResource(id = R.string.tab_profile)
                         }
-                        Text(text = title, color = primaryColor, fontWeight = FontWeight.Bold)
+                        Text(text = title, color = Color.White, fontWeight = FontWeight.Bold)
                     },
                     actions = {
                         if (selectedTab == 0) {
-                            IconButton(onClick = { isSearchActive = true }) {
-                                Icon(Icons.Default.Search, contentDescription = "Search", tint = primaryColor)
-                            }
+                            IconButton(onClick = { isSearchActive = true }) { Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White) }
                         }
-                        IconButton(onClick = onNavigateToSettings) {
-                            Icon(Icons.Default.Settings, contentDescription = "Settings", tint = primaryColor)
-                        }
+                        IconButton(onClick = onNavigateToSettings) { Icon(Icons.Default.Settings, contentDescription = "Settings", tint = Color.White) }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = backgroundColor)
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = primaryColor)
                 )
             }
         },
         bottomBar = {
             NavigationBar(containerColor = surfaceColor) {
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.List, contentDescription = null) },
+                    icon = { Icon(Icons.Default.Menu, contentDescription = null) },
                     label = { Text(stringResource(id = R.string.tab_resources)) },
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.Black, selectedTextColor = primaryColor,
-                        indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), unselectedTextColor = textColor.copy(alpha = 0.6f)
-                    )
+                    colors = NavigationBarItemDefaults.colors(selectedIconColor = Color.Black, selectedTextColor = primaryColor, indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), unselectedTextColor = textColor.copy(alpha = 0.6f))
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Assessment, contentDescription = null) },
                     label = { Text(stringResource(id = R.string.tab_logs)) },
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.Black, selectedTextColor = primaryColor,
-                        indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), unselectedTextColor = textColor.copy(alpha = 0.6f)
-                    )
+                    colors = NavigationBarItemDefaults.colors(selectedIconColor = Color.Black, selectedTextColor = primaryColor, indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), unselectedTextColor = textColor.copy(alpha = 0.6f))
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Person, contentDescription = null) },
                     label = { Text(stringResource(id = R.string.tab_profile)) },
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.Black, selectedTextColor = primaryColor,
-                        indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), unselectedTextColor = textColor.copy(alpha = 0.6f)
-                    )
+                    colors = NavigationBarItemDefaults.colors(selectedIconColor = Color.Black, selectedTextColor = primaryColor, indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), unselectedTextColor = textColor.copy(alpha = 0.6f))
                 )
             }
         }
@@ -146,11 +102,11 @@ fun ResourceListScreen(
             when (selectedTab) {
                 0 -> {
                     if (filteredResources.isEmpty()) {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text(stringResource(id = R.string.no_resources_found), color = textColor)
-                        }
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text(stringResource(id = R.string.no_resources_found), color = textColor) }
                     } else {
-                        ResourcesTab(primaryColor, surfaceColor, textColor, filteredResources, onResourceClick)
+                        LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            items(filteredResources) { resource -> ResourceCard(resource, primaryColor, surfaceColor, textColor, onClick = { onResourceClick(resource.id) }) }
+                        }
                     }
                 }
                 1 -> LogsTab(primaryColor, surfaceColor, textColor)
@@ -161,58 +117,37 @@ fun ResourceListScreen(
 }
 
 @Composable
-fun ResourcesTab(
-    primaryColor: Color,
-    surfaceColor: Color,
-    textColor: Color,
-    resources: List<Resource>,
-    onResourceClick: (String) -> Unit
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(resources) { resource ->
-            ResourceCard(resource = resource, primaryColor = primaryColor, surfaceColor = surfaceColor, textColor = textColor, onClick = { onResourceClick(resource.id) })
-        }
-    }
-}
-
-@Composable
 fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, textColor: Color, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = surfaceColor),
-        shape = RoundedCornerShape(16.dp)
-    ) {
+    Card(modifier = Modifier.fillMaxWidth().clickable { onClick() }, colors = CardDefaults.cardColors(containerColor = surfaceColor), shape = RoundedCornerShape(12.dp)) {
         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            val icon = when (resource.type) {
+            // آیکون‌های دقیقاً طبق طرح استاد
+            val icon = when (resource.type) { 
                 "API" -> Icons.Default.Link
                 "WEB_APP" -> Icons.Default.Language
                 "DATABASE" -> Icons.Default.Storage
-                else -> Icons.Default.Star
+                else -> Icons.Default.Star 
             }
-            Box(modifier = Modifier.size(48.dp).background(primaryColor.copy(alpha = 0.15f), RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.size(40.dp).background(primaryColor.copy(alpha = 0.15f), RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
                 Icon(imageVector = icon, contentDescription = null, tint = primaryColor)
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = stringResource(id = resource.nameRes), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = textColor)
+                Text(stringResource(id = resource.nameRes), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = textColor)
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(text = stringResource(id = resource.descRes), fontSize = 12.sp, color = textColor.copy(alpha = 0.6f), maxLines = 2)
+                Text(stringResource(id = resource.descRes), fontSize = 12.sp, color = textColor.copy(alpha = 0.6f), maxLines = 2)
                 Spacer(modifier = Modifier.height(8.dp))
                 
-                val (accessText, accessColor) = when (FakeData.currentUser.role) {
-                    "CEO" -> Pair(stringResource(id = R.string.access_full), primaryColor)
-                    "ADMIN", "MANAGER" -> Pair(stringResource(id = R.string.access_admin), primaryColor)
-                    else -> Pair(stringResource(id = R.string.access_denied), Color.Red)
+                // نمایش وضعیت دسترسی به صورت Badge
+                val (accessText, accessColor) = when (FakeData.currentUser.role) { 
+                    "CEO" -> Pair(stringResource(id = R.string.access_full), primaryColor); 
+                    "ADMIN", "MANAGER" -> Pair(stringResource(id = R.string.access_admin), primaryColor); 
+                    else -> Pair(stringResource(id = R.string.access_denied), Color.Red) 
                 }
-                
-                Text(
-                    text = accessText,
-                    fontSize = 12.sp, fontWeight = FontWeight.Bold, color = accessColor
-                )
+                Box(
+                    modifier = Modifier.background(accessColor.copy(alpha = 0.1f), RoundedCornerShape(4.dp)).padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(accessText, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = accessColor)
+                }
             }
         }
     }
@@ -220,49 +155,28 @@ fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, t
 
 @Composable
 fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
+    LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         if (FakeData.currentUser.role == "VIEWER") {
             item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = primaryColor.copy(alpha = 0.1f)),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
+                Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = primaryColor.copy(alpha = 0.1f)), shape = RoundedCornerShape(12.dp)) {
                     Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(stringResource(id = R.string.no_access_message), color = textColor, fontWeight = FontWeight.Bold)
                         Spacer(modifier = Modifier.height(8.dp))
-                        Button(
-                            onClick = { /* TODO: Send request to Admin */ },
-                            colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
-                        ) {
-                            Text(stringResource(id = R.string.request_access_button), color = Color.Black)
-                        }
+                        Button(onClick = { }, colors = ButtonDefaults.buttonColors(containerColor = primaryColor)) { Text(stringResource(id = R.string.request_access_button), color = Color.White) }
                     }
                 }
             }
         }
-
         items(FakeData.logs) { log ->
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = surfaceColor),
-                shape = RoundedCornerShape(12.dp)
-            ) {
+            Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = surfaceColor), shape = RoundedCornerShape(12.dp)) {
                 Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                     val isAllowed = log.status == "ALLOWED"
-                    val statusColor = if (isAllowed) Color(0xFF4CAF50) else Color(0xFFF44336)
-                    val statusIcon = if (isAllowed) Icons.Default.CheckCircle else Icons.Default.Cancel
-
-                    Icon(statusIcon, contentDescription = null, tint = statusColor, modifier = Modifier.size(32.dp))
+                    Icon(if (isAllowed) Icons.Default.CheckCircle else Icons.Default.Cancel, contentDescription = null, tint = if (isAllowed) Color(0xFF4CAF50) else Color(0xFFF44336), modifier = Modifier.size(24.dp))
                     Spacer(modifier = Modifier.width(16.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(text = stringResource(id = log.actionRes), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = textColor)
-                        Text(text = log.resourceName, fontSize = 12.sp, color = textColor.copy(alpha = 0.6f))
-                        Text(text = log.timestamp, fontSize = 10.sp, color = textColor.copy(alpha = 0.4f))
+                        Text(stringResource(id = log.actionRes), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = textColor)
+                        Text(log.resourceName, fontSize = 12.sp, color = textColor.copy(alpha = 0.6f))
+                        Text(log.timestamp, fontSize = 10.sp, color = textColor.copy(alpha = 0.4f))
                     }
                 }
             }
@@ -273,72 +187,52 @@ fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
 @Composable
 fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLogout: () -> Unit) {
     val scope = rememberCoroutineScope()
-
-    Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
-            modifier = Modifier.size(100.dp).clip(CircleShape).background(primaryColor.copy(alpha = 0.2f)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(Icons.Default.Person, contentDescription = null, tint = primaryColor, modifier = Modifier.size(60.dp))
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        
+        // هدر پروفایل طبق طرح استاد
+        Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = primaryColor), shape = RoundedCornerShape(16.dp)) {
+            Column(modifier = Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(modifier = Modifier.size(80.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.2f)), contentAlignment = Alignment.Center) {
+                    Icon(Icons.Default.Person, contentDescription = null, tint = Color.White, modifier = Modifier.size(50.dp))
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(FakeData.currentUser.name, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text(FakeData.currentUser.email, fontSize = 12.sp, color = Color.White.copy(alpha = 0.8f))
+            }
         }
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        Text(text = FakeData.currentUser.name, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = textColor)
-        Text(text = FakeData.currentUser.email, fontSize = 14.sp, color = textColor.copy(alpha = 0.6f))
-        
-        Spacer(modifier = Modifier.height(32.dp))
-        
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = surfaceColor),
-            shape = RoundedCornerShape(16.dp)
-        ) {
+        // کارت‌های اطلاعات
+        Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = surfaceColor), shape = RoundedCornerShape(12.dp)) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(text = stringResource(id = R.string.role_label), color = textColor.copy(alpha = 0.6f))
-                    val translatedRole = when (FakeData.currentUser.role) {
-                        "CEO" -> stringResource(id = R.string.role_ceo)
-                        "ADMIN" -> stringResource(id = R.string.role_admin)
-                        else -> stringResource(id = R.string.role_viewer)
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Badge, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(id = R.string.role_label), color = textColor.copy(alpha = 0.6f))
                     }
-                    Text(text = translatedRole, fontWeight = FontWeight.Bold, color = primaryColor)
+                    val translatedRole = when (FakeData.currentUser.role) { "CEO" -> stringResource(id = R.string.role_ceo); "ADMIN" -> stringResource(id = R.string.role_admin); else -> stringResource(id = R.string.role_viewer) }
+                    Text(translatedRole, fontWeight = FontWeight.Bold, color = primaryColor)
                 }
                 Divider(modifier = Modifier.padding(vertical = 12.dp), color = textColor.copy(alpha = 0.1f))
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(text = stringResource(id = R.string.org_label), color = textColor.copy(alpha = 0.6f))
-                    Text(text = stringResource(id = R.string.org_value), fontWeight = FontWeight.Bold, color = textColor)
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Business, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(id = R.string.org_label), color = textColor.copy(alpha = 0.6f))
+                    }
+                    Text(stringResource(id = R.string.org_value), fontWeight = FontWeight.Bold, color = textColor)
                 }
             }
         }
         
         Spacer(modifier = Modifier.weight(1f))
         
-        Button(
-            onClick = {
-                scope.launch {
-                    try {
-                        withContext(Dispatchers.IO) {
-                            if (FakeData.currentUser.id != "guest") {
-                                AppwriteClient.account.deleteSession("current")
-                            }
-                        }
-                    } catch (e: Exception) {
-                    } finally {
-                        onLogout()
-                    }
-                }
-            },
-            modifier = Modifier.fillMaxWidth().height(50.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F), contentColor = Color.White),
-            shape = RoundedCornerShape(12.dp)
-        ) {
+        Button(onClick = { scope.launch { try { withContext(Dispatchers.IO) { if (FakeData.currentUser.id != "guest") AppwriteClient.account.deleteSession("current") } } catch (e: Exception) {} finally { onLogout() } } }, modifier = Modifier.fillMaxWidth().height(50.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F), contentColor = Color.White), shape = RoundedCornerShape(12.dp)) {
             Icon(Icons.Default.ExitToApp, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = stringResource(id = R.string.logout_button), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(id = R.string.logout_button), fontSize = 14.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
