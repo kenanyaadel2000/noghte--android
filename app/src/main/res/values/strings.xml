@@ -26,6 +26,14 @@
     <string name="terms_link">قوانین</string>
     <string name="terms_suffix"> را می‌پذیرم</string>
     <string name="terms_prefix"></string>
+    <!-- Admin Panel -->
+    <string name="admin_panel_title">پنل مدیریت</string>
+    <string name="admin_panel_button">ورود به پنل مدیریت</string>
+    <string name="users_list_title">لیست کاربران سیستم</string>
+    <string name="role_updated_success">نقش کاربر با موفقیت تغییر کرد.</string>
+    <string name="role_update_error">خطا در تغییر نقش کاربر.</string>
+    <string name="loading_users">در حال دریافت لیست کاربران...</string>
+    
     
     <!-- کلمات قبلی را نگه دار و این‌ها را اضافه کن -->
     
