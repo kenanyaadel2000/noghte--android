@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">نقطه</string>
     <string name="login_subtitle">دروازه امن</string>
-    <string name="login_button">ورود به نقطه</string>
-    <string name="login_privacy_agree">مشاهده قوانین و شرایط</string>
     <string name="terms_title">قوانین و شرایط</string>
-    <string name="terms_text">به پلتفرم امنیتی «نقطه» خوش آمدید. لطفاً قبل از ورود، شرایط زیر را به دقت مطالعه فرمایید:\n\n۱. دسترسی شما به تمامی منابع و سرویس‌های زیرساختی تحت نظارت کامل و ۲۴ ساعته است.\n۲. اطلاعات ورود و توکن‌های شما با استفاده از استانداردهای امنیتی پیشرفته به صورت کاملاً رمزنگاری‌شده ذخیره می‌شوند.\n۳. هرگونه تلاش برای نفوذ غیرمجاز، مهندسی معکوس یا سوءاستفاده از دسترسی‌ها، پیگرد قانونی به همراه خواهد داشت.\n۴. شما متعهد می‌شوید که اطلاعات محرمانه سازمان خود را در محیط‌های ناامن به اشتراک نگذارید.\n۵. استفاده از ابزارهای خودکار (مانند ربات‌ها یا اسکریپت‌ها) برای استخراج داده‌ها ممنوع است.\n۶. در صورت مشاهده هرگونه فعالیت مشکوک، موظفید بلافاصله به تیم امنیت گزارش دهید.\n۷. حفظ و نگهداری از دستگاه شخصی شما در برابر بدافزارها بر عهده خود شماست.\n۸. هرگونه تغییر یا دستکاری در کدهای کلاینت منجر به قطع دسترسی دائمی خواهد شد.\n۹. این پلتفرم حق مسدودسازی دسترسی‌ها را در صورت نقض قوانین، بدون اطلاع قبلی محفوظ می‌دارد.\n۱۰. با ادامه فرآیند ورود، شما تایید می‌کنید که این شرایط را به طور کامل درک کرده‌اید.\n\nبا کلیک بر روی دکمه بازگشت و سپس ورود، موافقت خود را اعلام می‌کنید.</string>
+    <string name="terms_text">به پلتفرم امنیتی «نقطه» خوش آمدید. لطفاً قبل از ورود، شرایط زیر را به دقت مطالعه فرمایید:\n\n۱. دسترسی شما به تمامی منابع و سرویس‌های زیرساختی تحت نظارت کامل و ۲۴ ساعته است.\n۲. اطلاعات ورود و توکن‌های شما با استفاده از استانداردهای امنیتی پیشرفته به صورت کاملاً رمزنگاری‌شده ذخیره می‌شوند.\n۳. هرگونه تلاش برای نفوذ غیرمجاز، مهندسی معکوس یا سوءاستفاده از دسترسی‌ها، پیگرد قانونی به همراه خواهد داشت.\n۴. شما متعهد می‌شوید که اطلاعات محرمانه سازمان خود را در محیط‌های ناامن به اشتراک نگذارید.\n\nبا کلیک بر روی دکمه بازگشت و سپس ورود، موافقت خود را با این شرایط اعلام می‌کنید.</string>
     <string name="agree_checkbox">قوانین را می‌پذیرم</string>
     <string name="back_button">بازگشت</string>
     <string name="change_language">تغییر زبان</string>
@@ -13,35 +11,43 @@
     <string name="tab_resources">منابع</string>
     <string name="tab_logs">لاگ‌ها</string>
     <string name="tab_profile">پروفایل</string>
-    <string name="access_read">خواندن</string>
-    <string name="access_full">دسترسی کامل</string>
-    <string name="coming_soon">به زودی...</string>
-    <string name="profile_name">علی محمدی</string>
-    <string name="profile_email">ali.mohammadi@company.com</string>
-    <string name="profile_role_label">نقش</string>
-    <string name="profile_role_value">viewer, analyst</string>
-    <string name="profile_org_label">سازمان</string>
-    <string name="profile_org_value">Noghte Security</string>
     <string name="logout_button">خروج از حساب</string>
     <string name="email_label">ایمیل</string>
     <string name="password_label">رمز عبور</string>
+    <string name="confirm_password_label">تکرار رمز عبور</string>
     <string name="name_label">نام و نام خانوادگی</string>
     <string name="login_button_text">ورود به نقطه</string>
     <string name="register_button_text">ثبت‌نام</string>
     <string name="guest_login_text">ورود مهمان</string>
     <string name="create_account_title">ساخت حساب جدید</string>
+    <string name="settings_title">تنظیمات</string>
+    <string name="dark_mode">حالت تاریک</string>
+    <string name="light_mode">حالت روشن</string>
+    <string name="terms_link">قوانین</string>
+    <string name="terms_suffix"> را می‌پذیرم</string>
+    <string name="terms_prefix"></string>
+    
+    <!-- Error Messages -->
+    <string name="error_empty_fields">لطفاً همه فیلدها را پر کنید.</string>
+    <string name="error_password_mismatch">رمز عبور و تکرار آن یکسان نیستند.</string>
     <string name="error_invalid_email">فرمت ایمیل وارد شده صحیح نیست.</string>
     <string name="error_not_verified">حساب شما هنوز توسط ادمین تایید نشده است. لطفا منتظر بمانید.</string>
     <string name="error_invalid_credentials">ایمیل یا رمز عبور اشتباه است.</string>
     <string name="error_user_exists">این ایمیل قبلاً ثبت‌نام کرده است.</string>
-    <string name="error_empty_fields">لطفاً همه فیلدها را پر کنید.</string>
     <string name="register_success_msg">ثبت‌نام انجام شد. بعد از تایید ادمین حساب شما فعال می‌شود.</string>
-    <string name="settings_title">تنظیمات</string>
-    <string name="dark_mode">حالت تاریک (Dark Mode)</string>
-    <string name="light_mode">حالت روشن (Light Mode)</string>
-    
-    <!-- کلمات مربوط به قوانین -->
-    <string name="terms_link">قوانین</string>
-    <string name="terms_suffix"> را می‌پذیرم</string>
-    <string name="terms_prefix"></string>
+
+    <!-- Zero Trust & Access Strings -->
+    <string name="access_denied">دسترسی ندارد</string>
+    <string name="access_admin">دسترسی ادمین</string>
+    <string name="access_full">دسترسی کامل (مدیرعامل)</string>
+    <string name="no_access_message">شما در حال حاضر دسترسی به منابع ندارید.</string>
+    <string name="request_access_button">درخواست دسترسی به مدیر</string>
+    <string name="no_resources_found">منبعی یافت نشد</string>
+    <string name="role_viewer">viewer</string>
+    <string name="role_admin">admin</string>
+    <string name="role_ceo">ceo</string>
+    <string name="role_label">نقش شما</string>
+    <string name="org_label">سازمان</string>
+    <string name="org_value">Noghte Security</string>
+    <string name="profile_email_placeholder">ali.mohammadi@company.com</string>
 </resources>
