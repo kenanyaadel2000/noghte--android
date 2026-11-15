@@ -26,6 +26,29 @@
     <string name="terms_prefix">I accept the </string>
     <string name="terms_link">rules</string>
     <string name="terms_suffix"></string>
+    
+    <!-- کلمات قبلی را نگه دار و این‌ها را اضافه کن -->
+    
+    <!-- Resource Names & Descriptions -->
+    <string name="res_fin_name">Financial API</string>
+    <string name="res_fin_desc">Access to the financial API for reporting and transactions. This API allows fetching financial reports, viewing transactions, and managing accounts.</string>
+    
+    <string name="res_admin_name">Admin Panel</string>
+    <string name="res_admin_desc">System management panel for admin users. This panel provides full access to system settings and user management.</string>
+    
+    <string name="res_db_name">Analytics DB</string>
+    <string name="res_db_desc">Analytical database for heavy reporting queries and big data processing.</string>
+    
+    <string name="res_gpu_name">GPU Cluster</string>
+    <string name="res_gpu_desc">Processing cluster for running AI models and training.</string>
+
+    <!-- Log Actions -->
+    <string name="log_login">System Login</string>
+    <string name="log_req_access">Access Request</string>
+    <string name="log_view_dash">View Dashboard</string>
+    <string name="log_run_job">Run Job</string>
+    <string name="log_logout">System Logout</string>
+
 
     <!-- Error Messages -->
     <string name="error_empty_fields">Please fill all fields.</string>
