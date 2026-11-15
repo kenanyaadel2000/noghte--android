@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -83,7 +84,7 @@ fun ResourceListScreen(
                 TopAppBar(
                     title = {
                         val title = when(selectedTab) {
-                            0 -> stringResource(id = R.string.resources_title)
+                            0 -> stringResource(id = R.string.tab_resources)
                             1 -> stringResource(id = R.string.tab_logs)
                             else -> stringResource(id = R.string.tab_profile)
                         }
@@ -143,7 +144,7 @@ fun ResourceListScreen(
                 0 -> {
                     if (filteredResources.isEmpty()) {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("منبعی یافت نشد", color = textColor)
+                            Text(stringResource(id = R.string.no_resources_found), color = textColor)
                         }
                     } else {
                         ResourcesTab(primaryColor, surfaceColor, textColor, filteredResources, onResourceClick)
@@ -196,16 +197,16 @@ fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, t
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = resource.name, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = textColor)
                 Spacer(modifier = Modifier.height(4.dp))
+                // توضیحات منابع فعلا از FakeData میاد (چون داده است)، اما متن دسترسی ترجمه میشه
                 Text(text = resource.description, fontSize = 12.sp, color = textColor.copy(alpha = 0.6f), maxLines = 2)
                 Spacer(modifier = Modifier.height(8.dp))
                 
-                // ✅ نمایش دسترسی بر اساس نقش کاربر
-                val accessText = when (FakeData.currentUser.role) {
-                    "CEO" -> "دسترسی کامل (مدیرعامل)"
-                    "ADMIN", "MANAGER" -> "دسترسی ادمین"
-                    else -> "دسترسی ندارد"
+                // ✅ نمایش دسترسی بر اساس نقش کاربر با ترجمه
+                val (accessText, accessColor) = when (FakeData.currentUser.role) {
+                    "CEO" -> Pair(stringResource(id = R.string.access_full), primaryColor)
+                    "ADMIN", "MANAGER" -> Pair(stringResource(id = R.string.access_admin), primaryColor)
+                    else -> Pair(stringResource(id = R.string.access_denied), Color.Red)
                 }
-                val accessColor = if (FakeData.currentUser.role == "VIEWER") Color.Red else primaryColor
                 
                 Text(
                     text = accessText,
@@ -223,7 +224,7 @@ fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // ✅ دکمه درخواست دسترسی برای کاربران ویوور
+        // ✅ دکمه درخواست دسترسی برای کاربران ویوور (با ترجمه)
         if (FakeData.currentUser.role == "VIEWER") {
             item {
                 Card(
@@ -232,13 +233,13 @@ fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("شما در حال حاضر دسترسی به منابع ندارید.", color = textColor, fontWeight = FontWeight.Bold)
+                        Text(stringResource(id = R.string.no_access_message), color = textColor, fontWeight = FontWeight.Bold)
                         Spacer(modifier = Modifier.height(8.dp))
                         Button(
                             onClick = { /* TODO: Send request to Admin */ },
                             colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
                         ) {
-                            Text("درخواست دسترسی به مدیر", color = Color.Black)
+                            Text(stringResource(id = R.string.request_access_button), color = Color.Black)
                         }
                     }
                 }
@@ -298,13 +299,19 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(text = stringResource(id = R.string.profile_role_label), color = textColor.copy(alpha = 0.6f))
-                    Text(text = FakeData.currentUser.role, fontWeight = FontWeight.Bold, color = primaryColor)
+                    Text(text = stringResource(id = R.string.role_label), color = textColor.copy(alpha = 0.6f))
+                    // ✅ ترجمه نقش
+                    val translatedRole = when (FakeData.currentUser.role) {
+                        "CEO" -> stringResource(id = R.string.role_ceo)
+                        "ADMIN" -> stringResource(id = R.string.role_admin)
+                        else -> stringResource(id = R.string.role_viewer)
+                    }
+                    Text(text = translatedRole, fontWeight = FontWeight.Bold, color = primaryColor)
                 }
                 Divider(modifier = Modifier.padding(vertical = 12.dp), color = textColor.copy(alpha = 0.1f))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(text = stringResource(id = R.string.profile_org_label), color = textColor.copy(alpha = 0.6f))
-                    Text(text = stringResource(id = R.string.profile_org_value), fontWeight = FontWeight.Bold, color = textColor)
+                    Text(text = stringResource(id = R.string.org_label), color = textColor.copy(alpha = 0.6f))
+                    Text(text = stringResource(id = R.string.org_value), fontWeight = FontWeight.Bold, color = textColor)
                 }
             }
         }
