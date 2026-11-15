@@ -27,6 +27,29 @@
     <string name="terms_suffix"> را می‌پذیرم</string>
     <string name="terms_prefix"></string>
     
+    <!-- کلمات قبلی را نگه دار و این‌ها را اضافه کن -->
+    
+    <!-- Resource Names & Descriptions -->
+    <string name="res_fin_name">Financial API</string>
+    <string name="res_fin_desc">دسترسی به API مالی برای گزارش‌گیری و تراکنش‌ها. این API امکان دریافت گزارش‌های مالی، مشاهده تراکنش‌ها و مدیریت حساب‌ها را فراهم می‌کند.</string>
+    
+    <string name="res_admin_name">Admin Panel</string>
+    <string name="res_admin_desc">پنل مدیریت سیستم برای کاربران با نقش ادمین. این پنل دسترسی کامل به تنظیمات سیستم و مدیریت کاربران را می‌دهد.</string>
+    
+    <string name="res_db_name">Analytics DB</string>
+    <string name="res_db_desc">دیتابیس تحلیلی برای کوئری‌های گزارش‌گیری سنگین و پردازش داده‌های کلان.</string>
+    
+    <string name="res_gpu_name">GPU Cluster</string>
+    <string name="res_gpu_desc">خوشه پردازشی برای اجرای مدل‌های هوش مصنوعی و آموزش (Training) مدل‌ها.</string>
+
+    <!-- Log Actions -->
+    <string name="log_login">ورود به سیستم</string>
+    <string name="log_req_access">درخواست دسترسی</string>
+    <string name="log_view_dash">مشاهده داشبورد</string>
+    <string name="log_run_job">اجرای Job</string>
+    <string name="log_logout">خروج از سیستم</string>
+
+    
     <!-- Error Messages -->
     <string name="error_empty_fields">لطفاً همه فیلدها را پر کنید.</string>
     <string name="error_password_mismatch">رمز عبور و تکرار آن یکسان نیستند.</string>
