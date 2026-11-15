@@ -50,18 +50,20 @@ class MainActivity : ComponentActivity() {
             // ۵. تعیین جهت چیدمان (راست‌چین یا چپ‌چین) بر اساس زبان
             val layoutDirection = if (appLanguage == "fa") LayoutDirection.Rtl else LayoutDirection.Ltr
 
-            // 🎨 تعریف پالت رنگی تیره (همون تم فعلی)
+            // 🎨 پالت رنگی تیره (طبق PDF استاد: سبز فیروزه‌ای و بنفش)
             val darkColors = darkColorScheme(
-                primary = Color(0xFFD4AF37), // طلایی
+                primary = Color(0xFF00897B), // سبز فیروزه‌ای
+                secondary = Color(0xFF7F52FF), // بنفش
                 background = Color(0xFF121212),
                 surface = Color(0xFF1E1E1E),
                 onBackground = Color.White,
                 onSurface = Color.White
             )
 
-            // 🎨 تعریف پالت رنگی روشن
+            // 🎨 پالت رنگی روشن (طبق PDF استاد: سبز فیروزه‌ای و بنفش)
             val lightColors = lightColorScheme(
-                primary = Color(0xFFD4AF37), // طلایی
+                primary = Color(0xFF00897B), // سبز فیروزه‌ای
+                secondary = Color(0xFF7F52FF), // بنفش
                 background = Color(0xFFF9F9F9),
                 surface = Color.White,
                 onBackground = Color.Black,
@@ -72,7 +74,7 @@ class MainActivity : ComponentActivity() {
                 MaterialTheme(
                     colorScheme = if (isDarkTheme) darkColors else lightColors
                 ) {
-                    Surface {
+                    Surface(modifier = Modifier.fillMaxSize()) {
                         AppNavigation(
                             isAlreadyLoggedIn = isLoggedIn,
                             isDarkTheme = isDarkTheme,
@@ -192,7 +194,7 @@ fun AppNavigation(
                 isDarkTheme = isDarkTheme,
                 onThemeChange = onThemeChange,
                 onLanguageChange = changeLanguage,
-                onNavigateToAdminPanel = { currentScreen = "admin_panel" }, // ✅ اتصال به پنل ادمین
+                onNavigateToAdminPanel = { currentScreen = "admin_panel" },
                 onBackClick = { currentScreen = "home" }
             )
         }
