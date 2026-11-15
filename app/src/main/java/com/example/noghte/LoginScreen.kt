@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.appwrite.Query
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -180,11 +181,30 @@ fun LoginScreen(
                                     throw Exception(context.getString(R.string.error_not_verified))
                                 }
 
+                                // ✅ دریافت نقش کاربر از دیتابیس
+                                var userRole = "VIEWER"
+                                try {
+                                    val docs = withContext(Dispatchers.IO) {
+                                        AppwriteClient.databases.listDocuments(
+                                            databaseId = AppwriteClient.DATABASE_ID,
+                                            collectionId = AppwriteClient.TABLE_ID,
+                                            queries = listOf(Query.equal("email", email))
+                                        )
+                                    }
+                                    if (docs.documents.isNotEmpty()) {
+                                        // اگر نقش توی دیتابیس بود، بخونش. اگر نبود، پیش‌فرض ویوور
+                                        userRole = docs.documents.first().data["role"]?.toString() ?: "VIEWER"
+                                    }
+                                } catch (e: Exception) {
+                                    // اگر ایندکس نبود یا دیتابیس خطا داد، پیش‌فرض ویوور
+                                    userRole = "VIEWER"
+                                }
+
                                 FakeData.currentUser = User(
                                     id = currentUser.id,
                                     name = currentUser.name,
                                     email = currentUser.email,
-                                    role = "VIEWER" 
+                                    role = userRole
                                 )
 
                                 isLoading = false
@@ -222,26 +242,21 @@ fun LoginScreen(
                 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // ✅ بخش قوانین (کاملاً چسبیده به هم و وسط‌چین)
                 val layoutDir = LocalLayoutDirection.current
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    // کوچک کردن مربع تا حاشیه نامرئی آن کمتر شود
                     Checkbox(
                         checked = isChecked,
                         onCheckedChange = { isChecked = it },
                         modifier = Modifier.size(24.dp), 
                         colors = CheckboxDefaults.colors(checkedColor = primaryGold, uncheckedColor = textColor.copy(alpha = 0.5f))
                     )
-                    
-                    // فاصله خیلی کم
                     Spacer(modifier = Modifier.width(4.dp))
 
                     if (layoutDir == LayoutDirection.Rtl) {
-                        // فارسی: [قوانین] را می‌پذیرم
                         Text(
                             text = stringResource(id = R.string.terms_link),
                             fontSize = 14.sp,
@@ -255,13 +270,12 @@ fun LoginScreen(
                             color = textColor
                         )
                     } else {
-                        // انگلیسی: I accept the [rules]
                         Text(
                             text = stringResource(id = R.string.terms_prefix),
                             fontSize = 14.sp,
                             color = textColor
                         )
-                        Spacer(modifier = Modifier.width(4.dp)) // فاصله بین the و rules
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = stringResource(id = R.string.terms_link),
                             fontSize = 14.sp,
