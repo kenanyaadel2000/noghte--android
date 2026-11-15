@@ -41,7 +41,6 @@ fun ResourceListScreen(
     var isSearchActive by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
 
-    // فیلتر کردن منابع بر اساس متن جستجو
     val filteredResources = if (searchQuery.isEmpty()) {
         FakeData.resources
     } else {
@@ -52,7 +51,6 @@ fun ResourceListScreen(
         containerColor = backgroundColor,
         topBar = {
             if (isSearchActive) {
-                // نوار جستجو (وقتی فعاله)
                 TopAppBar(
                     title = {
                         TextField(
@@ -82,7 +80,6 @@ fun ResourceListScreen(
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = backgroundColor)
                 )
             } else {
-                // نوار بالا (حالت عادی)
                 TopAppBar(
                     title = {
                         val title = when(selectedTab) {
@@ -201,9 +198,18 @@ fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, t
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(text = resource.description, fontSize = 12.sp, color = textColor.copy(alpha = 0.6f), maxLines = 2)
                 Spacer(modifier = Modifier.height(8.dp))
+                
+                // ✅ نمایش دسترسی بر اساس نقش کاربر
+                val accessText = when (FakeData.currentUser.role) {
+                    "CEO" -> "دسترسی کامل (مدیرعامل)"
+                    "ADMIN", "MANAGER" -> "دسترسی ادمین"
+                    else -> "دسترسی ندارد"
+                }
+                val accessColor = if (FakeData.currentUser.role == "VIEWER") Color.Red else primaryColor
+                
                 Text(
-                    text = if (resource.accessLevel == "FULL") stringResource(id = R.string.access_full) else stringResource(id = R.string.access_read),
-                    fontSize = 12.sp, fontWeight = FontWeight.Bold, color = primaryColor
+                    text = accessText,
+                    fontSize = 12.sp, fontWeight = FontWeight.Bold, color = accessColor
                 )
             }
         }
@@ -217,6 +223,28 @@ fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        // ✅ دکمه درخواست دسترسی برای کاربران ویوور
+        if (FakeData.currentUser.role == "VIEWER") {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = primaryColor.copy(alpha = 0.1f)),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("شما در حال حاضر دسترسی به منابع ندارید.", color = textColor, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Button(
+                            onClick = { /* TODO: Send request to Admin */ },
+                            colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
+                        ) {
+                            Text("درخواست دسترسی به مدیر", color = Color.Black)
+                        }
+                    }
+                }
+            }
+        }
+
         items(FakeData.logs) { log ->
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -258,7 +286,6 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        // ✅ نمایش نام، ایمیل و نقش واقعی از FakeData.currentUser
         Text(text = FakeData.currentUser.name, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = textColor)
         Text(text = FakeData.currentUser.email, fontSize = 14.sp, color = textColor.copy(alpha = 0.6f))
         
@@ -272,7 +299,6 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
             Column(modifier = Modifier.padding(16.dp)) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(text = stringResource(id = R.string.profile_role_label), color = textColor.copy(alpha = 0.6f))
-                    // ✅ نمایش نقش واقعی
                     Text(text = FakeData.currentUser.role, fontWeight = FontWeight.Bold, color = primaryColor)
                 }
                 Divider(modifier = Modifier.padding(vertical = 12.dp), color = textColor.copy(alpha = 0.1f))
@@ -290,13 +316,11 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
                 scope.launch {
                     try {
                         withContext(Dispatchers.IO) {
-                            // ✅ اگر کاربر مهمان نبود، سشن واقعی Appwrite رو ببند
                             if (FakeData.currentUser.id != "guest") {
                                 AppwriteClient.account.deleteSession("current")
                             }
                         }
                     } catch (e: Exception) {
-                        // در صورت خطا، باز هم از برنامه خارج شو
                     } finally {
                         onLogout()
                     }
