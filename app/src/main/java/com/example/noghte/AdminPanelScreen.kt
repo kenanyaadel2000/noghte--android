@@ -35,7 +35,6 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
     
     val scope = rememberCoroutineScope()
 
-    // تابع برای دریافت لیست کاربران از دیتابیس
     fun fetchUsers() {
         scope.launch {
             isLoading = true
@@ -46,7 +45,7 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
                         collectionId = AppwriteClient.TABLE_ID
                     )
                 }
-                usersList = response.documents.map { it.data } // گرفتن دیتای خام
+                usersList = response.documents.map { it.data }
                 isLoading = false
             } catch (e: Exception) {
                 isLoading = false
@@ -55,7 +54,6 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
         }
     }
 
-    // اجرای تابع در اولین ورود به صفحه
     LaunchedEffect(Unit) {
         fetchUsers()
     }
@@ -64,13 +62,13 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
         containerColor = backgroundColor,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(id = R.string.admin_panel_title), color = primaryColor, fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(id = R.string.admin_panel_title), color = Color.White, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = primaryColor)
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = backgroundColor)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = primaryColor)
             )
         }
     ) { paddingValues ->
@@ -109,7 +107,6 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
                             surfaceColor = surfaceColor,
                             textColor = textColor,
                             onRoleChanged = { newRole ->
-                                // آپدیت دیتابیس در پس‌زمینه
                                 scope.launch {
                                     try {
                                         withContext(Dispatchers.IO) {
@@ -120,10 +117,8 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
                                                 data = mapOf("role" to newRole)
                                             )
                                         }
-                                        fetchUsers() // دریافت مجدد لیست برای آپدیت شدن UI
-                                    } catch (e: Exception) {
-                                        // در صورت خطا، می‌توانید یک Toast یا پیام نمایش دهید
-                                    }
+                                        fetchUsers() 
+                                    } catch (e: Exception) {}
                                 }
                             }
                         )
@@ -173,7 +168,6 @@ fun AdminUserCard(
                 Text(text = email, fontSize = 12.sp, color = textColor.copy(alpha = 0.6f))
             }
 
-            // منوی کشویی برای تغییر نقش
             Box {
                 Button(
                     onClick = { expanded = true },
