@@ -4,14 +4,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,12 +34,15 @@ fun RegisterScreen(
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var successMessage by remember { mutableStateOf<String?>(null) }
     
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val primaryColor = MaterialTheme.colorScheme.primary
     val textColor = MaterialTheme.colorScheme.onBackground
 
@@ -50,7 +57,7 @@ fun RegisterScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(id = R.string.register_button_text), color = primaryColor, fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(id = R.string.create_account_title), color = primaryColor, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = primaryColor)
@@ -75,7 +82,8 @@ fun RegisterScreen(
                 onValueChange = { name = it },
                 label = { Text(stringResource(id = R.string.name_label)) },
                 modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor, focusedLabelColor = primaryColor)
+                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor, focusedLabelColor = primaryColor),
+                singleLine = true
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -84,17 +92,44 @@ fun RegisterScreen(
                 onValueChange = { email = it },
                 label = { Text(stringResource(id = R.string.email_label)) },
                 modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor, focusedLabelColor = primaryColor)
+                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor, focusedLabelColor = primaryColor),
+                singleLine = true
             )
             Spacer(modifier = Modifier.height(16.dp))
 
+            // فیلد رمز عبور با آیکون چشم
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text(stringResource(id = R.string.password_label)) },
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = image, contentDescription = null, tint = primaryColor)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor, focusedLabelColor = primaryColor)
+                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor, focusedLabelColor = primaryColor),
+                singleLine = true
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // فیلد تکرار رمز عبور
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                label = { Text(stringResource(id = R.string.confirm_password_label)) },
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = image, contentDescription = null, tint = primaryColor)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = primaryColor, focusedLabelColor = primaryColor),
+                singleLine = true
             )
 
             if (errorMessage != null) {
@@ -117,8 +152,13 @@ fun RegisterScreen(
 
             Button(
                 onClick = { 
-                    if (email.isBlank() || password.isBlank() || name.isBlank()) {
-                        errorMessage = "لطفاً همه فیلدها را پر کنید.\nPlease fill all fields."
+                    if (email.isBlank() || password.isBlank() || name.isBlank() || confirmPassword.isBlank()) {
+                        errorMessage = context.getString(R.string.error_empty_fields)
+                        return@Button
+                    }
+                    
+                    if (password != confirmPassword) {
+                        errorMessage = context.getString(R.string.error_password_mismatch)
                         return@Button
                     }
                     
@@ -173,15 +213,14 @@ fun RegisterScreen(
                             }
 
                             isLoading = false
-                            successMessage = "ثبت‌نام انجام شد. بعد از تایید ادمین حساب شما فعال می‌شود.\nRegistration successful. Activated after admin approval."
+                            successMessage = context.getString(R.string.register_success_msg)
                             
                         } catch (e: Exception) {
                             isLoading = false
-                            // ✅ ترجمه ارور ثبت‌نام
                             val msg = e.message ?: ""
                             errorMessage = when {
-                                msg.contains("already exists") -> "این ایمیل قبلاً ثبت‌نام کرده است.\nThis email is already registered."
-                                msg.contains("Invalid `email`") || msg.contains("valid email") -> "فرمت ایمیل وارد شده صحیح نیست.\nInvalid email format."
+                                msg.contains("already exists") -> context.getString(R.string.error_user_exists)
+                                msg.contains("Invalid `email`") || msg.contains("valid email") -> context.getString(R.string.error_invalid_email)
                                 else -> msg
                             }
                         }
