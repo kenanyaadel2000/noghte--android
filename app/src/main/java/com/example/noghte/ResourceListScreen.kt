@@ -5,8 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -43,18 +45,18 @@ fun ResourceListScreen(
 
     val isAdminOrCeo = FakeData.currentUser.role == "ADMIN" || FakeData.currentUser.role == "CEO"
 
-    // ✅ فیلتر کردن منابع: ویوورها نباید Admin Panel رو ببینن
-val baseResources = if (FakeData.currentUser.role == "VIEWER") {
-    FakeData.resources.filter { it.id != "2" } // ID 2 همون Admin Panel هست
-} else {
-    FakeData.resources
-}
+    // فیلتر کردن منابع: ویوورها نباید Admin Panel رو ببینن
+    val baseResources = if (FakeData.currentUser.role == "VIEWER") {
+        FakeData.resources.filter { it.id != "2" } 
+    } else {
+        FakeData.resources
+    }
 
-val filteredResources = if (searchQuery.isEmpty()) {
-    baseResources
-} else {
-    baseResources.filter { it.nameRes.toString().contains(searchQuery, ignoreCase = true) }
-}
+    val filteredResources = if (searchQuery.isEmpty()) {
+        baseResources
+    } else {
+        baseResources.filter { it.nameRes.toString().contains(searchQuery, ignoreCase = true) }
+    }
 
     Scaffold(
         containerColor = backgroundColor,
@@ -110,7 +112,6 @@ val filteredResources = if (searchQuery.isEmpty()) {
                     colors = NavigationBarItemDefaults.colors(selectedIconColor = Color.Black, selectedTextColor = primaryColor, indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), unselectedTextColor = textColor.copy(alpha = 0.6f))
                 )
                 
-                // ✅ تب جدید فقط برای ادمین و مدیرعامل
                 if (isAdminOrCeo) {
                     NavigationBarItem(
                         icon = { Icon(Icons.Default.AdminPanelSettings, contentDescription = null) },
@@ -136,14 +137,12 @@ val filteredResources = if (searchQuery.isEmpty()) {
                 }
                 1 -> LogsTab(primaryColor, surfaceColor, textColor)
                 2 -> ProfileTab(primaryColor, surfaceColor, textColor, onLogout)
-                3 -> AdminPanelScreen(onBackClick = { selectedTab = 0 }) // ✅ لود کردن پنل ادمین در تب
+                3 -> AdminPanelScreen(onBackClick = { selectedTab = 0 }) 
             }
         }
     }
 }
 
-// ... (بقیه توابع ResourceCard, LogsTab, ProfileTab بدون تغییر باقی می‌مونن)
-// از خط زیر به بعد همون کدهای قبلی رو کپی کن (چون تغییری نکردن)
 @Composable
 fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, textColor: Color, onClick: () -> Unit) {
     Card(modifier = Modifier.fillMaxWidth().clickable { onClick() }, colors = CardDefaults.cardColors(containerColor = surfaceColor), shape = RoundedCornerShape(12.dp)) {
@@ -168,17 +167,6 @@ fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, t
 @Composable
 fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
     LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        if (FakeData.currentUser.role == "VIEWER") {
-            item {
-                Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = primaryColor.copy(alpha = 0.1f)), shape = RoundedCornerShape(12.dp)) {
-                    Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(stringResource(id = R.string.no_access_message), color = textColor, fontWeight = FontWeight.Bold)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Button(onClick = { }, colors = ButtonDefaults.buttonColors(containerColor = primaryColor)) { Text(stringResource(id = R.string.request_access_button), color = Color.White) }
-                    }
-                }
-            }
-        }
         items(FakeData.logs) { log ->
             Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = surfaceColor), shape = RoundedCornerShape(12.dp)) {
                 Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -199,7 +187,20 @@ fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
 @Composable
 fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLogout: () -> Unit) {
     val scope = rememberCoroutineScope()
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    
+    // وضعیت 2FA (ذخیره در FakeData)
+    var is2FAEnabled by remember { mutableStateOf(FakeData.currentUser.twoFactorEnabled) }
+    // وضعیت درخواست دسترسی
+    var hasRequested by remember { mutableStateOf(FakeData.currentUser.hasRequestedAccess) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp), 
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // هدر پروفایل
         Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = primaryColor), shape = RoundedCornerShape(16.dp)) {
             Column(modifier = Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(modifier = Modifier.size(80.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.2f)), contentAlignment = Alignment.Center) {
@@ -213,8 +214,23 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
         
         Spacer(modifier = Modifier.height(16.dp))
         
+        // کارت اطلاعات
         Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = surfaceColor), shape = RoundedCornerShape(12.dp)) {
             Column(modifier = Modifier.padding(16.dp)) {
+                
+                // شناسه کاربری
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Fingerprint, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(id = R.string.user_id_label), color = textColor.copy(alpha = 0.6f))
+                    }
+                    Text(FakeData.currentUser.id, fontWeight = FontWeight.Bold, color = textColor)
+                }
+                
+                Divider(modifier = Modifier.padding(vertical = 12.dp), color = textColor.copy(alpha = 0.1f))
+
+                // نقش
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Badge, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
@@ -224,7 +240,10 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
                     val translatedRole = when (FakeData.currentUser.role) { "CEO" -> stringResource(id = R.string.role_ceo); "ADMIN" -> stringResource(id = R.string.role_admin); else -> stringResource(id = R.string.role_viewer) }
                     Text(translatedRole, fontWeight = FontWeight.Bold, color = primaryColor)
                 }
+                
                 Divider(modifier = Modifier.padding(vertical = 12.dp), color = textColor.copy(alpha = 0.1f))
+                
+                // سازمان
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Business, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
@@ -233,15 +252,69 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
                     }
                     Text(stringResource(id = R.string.org_value), fontWeight = FontWeight.Bold, color = textColor)
                 }
+                
+                Divider(modifier = Modifier.padding(vertical = 12.dp), color = textColor.copy(alpha = 0.1f))
+
+                // احراز هویت دو مرحله‌ای
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Security, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text(stringResource(id = R.string.two_factor_label), color = textColor.copy(alpha = 0.6f))
+                            Text(stringResource(id = R.string.two_factor_desc), color = textColor.copy(alpha = 0.4f), fontSize = 10.sp)
+                        }
+                    }
+                    Switch(
+                        checked = is2FAEnabled,
+                        onCheckedChange = { 
+                            is2FAEnabled = it 
+                            FakeData.currentUser = FakeData.currentUser.copy(twoFactorEnabled = it)
+                        },
+                        colors = SwitchDefaults.colors(checkedThumbColor = primaryColor)
+                    )
+                }
             }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // دکمه درخواست دسترسی (فقط برای ویوور)
+        if (FakeData.currentUser.role == "VIEWER") {
+            Button(
+                onClick = { 
+                    if (!hasRequested) {
+                        hasRequested = true
+                        FakeData.currentUser = FakeData.currentUser.copy(hasRequestedAccess = true)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().height(50.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (hasRequested) Color.Gray else primaryColor, 
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(12.dp),
+                enabled = !hasRequested
+            ) {
+                Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (hasRequested) "درخواست ارسال شد" else stringResource(id = R.string.request_access_btn), 
+                    fontSize = 16.sp, fontWeight = FontWeight.Bold
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
         
         Spacer(modifier = Modifier.weight(1f))
         
+        // دکمه خروج
         Button(onClick = { scope.launch { try { withContext(Dispatchers.IO) { if (FakeData.currentUser.id != "guest") AppwriteClient.account.deleteSession("current") } } catch (e: Exception) {} finally { onLogout() } } }, modifier = Modifier.fillMaxWidth().height(50.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F), contentColor = Color.White), shape = RoundedCornerShape(12.dp)) {
             Icon(Icons.Default.ExitToApp, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
             Text(stringResource(id = R.string.logout_button), fontSize = 14.sp, fontWeight = FontWeight.Bold)
         }
+        
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
