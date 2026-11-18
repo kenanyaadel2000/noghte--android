@@ -41,6 +41,8 @@ fun ResourceListScreen(
     var isSearchActive by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
 
+    val isAdminOrCeo = FakeData.currentUser.role == "ADMIN" || FakeData.currentUser.role == "CEO"
+
     val filteredResources = if (searchQuery.isEmpty()) FakeData.resources else FakeData.resources.filter { it.nameRes.toString().contains(searchQuery, ignoreCase = true) }
 
     Scaffold(
@@ -58,7 +60,8 @@ fun ResourceListScreen(
                         val title = when(selectedTab) {
                             0 -> stringResource(id = R.string.tab_resources)
                             1 -> stringResource(id = R.string.tab_logs)
-                            else -> stringResource(id = R.string.tab_profile)
+                            2 -> stringResource(id = R.string.tab_profile)
+                            else -> stringResource(id = R.string.admin_panel_title)
                         }
                         Text(text = title, color = Color.White, fontWeight = FontWeight.Bold)
                     },
@@ -95,6 +98,17 @@ fun ResourceListScreen(
                     onClick = { selectedTab = 2 },
                     colors = NavigationBarItemDefaults.colors(selectedIconColor = Color.Black, selectedTextColor = primaryColor, indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), unselectedTextColor = textColor.copy(alpha = 0.6f))
                 )
+                
+                // ✅ تب جدید فقط برای ادمین و مدیرعامل
+                if (isAdminOrCeo) {
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Default.AdminPanelSettings, contentDescription = null) },
+                        label = { Text(stringResource(id = R.string.admin_tab)) },
+                        selected = selectedTab == 3,
+                        onClick = { selectedTab = 3 },
+                        colors = NavigationBarItemDefaults.colors(selectedIconColor = Color.Black, selectedTextColor = primaryColor, indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), unselectedTextColor = textColor.copy(alpha = 0.6f))
+                    )
+                }
             }
         }
     ) { paddingValues ->
@@ -111,22 +125,19 @@ fun ResourceListScreen(
                 }
                 1 -> LogsTab(primaryColor, surfaceColor, textColor)
                 2 -> ProfileTab(primaryColor, surfaceColor, textColor, onLogout)
+                3 -> AdminPanelScreen(onBackClick = { selectedTab = 0 }) // ✅ لود کردن پنل ادمین در تب
             }
         }
     }
 }
 
+// ... (بقیه توابع ResourceCard, LogsTab, ProfileTab بدون تغییر باقی می‌مونن)
+// از خط زیر به بعد همون کدهای قبلی رو کپی کن (چون تغییری نکردن)
 @Composable
 fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, textColor: Color, onClick: () -> Unit) {
     Card(modifier = Modifier.fillMaxWidth().clickable { onClick() }, colors = CardDefaults.cardColors(containerColor = surfaceColor), shape = RoundedCornerShape(12.dp)) {
         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            // آیکون‌های دقیقاً طبق طرح استاد
-            val icon = when (resource.type) { 
-                "API" -> Icons.Default.Link
-                "WEB_APP" -> Icons.Default.Language
-                "DATABASE" -> Icons.Default.Storage
-                else -> Icons.Default.Star 
-            }
+            val icon = when (resource.type) { "API" -> Icons.Default.Link; "WEB_APP" -> Icons.Default.Language; "DATABASE" -> Icons.Default.Storage; else -> Icons.Default.Star }
             Box(modifier = Modifier.size(40.dp).background(primaryColor.copy(alpha = 0.15f), RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
                 Icon(imageVector = icon, contentDescription = null, tint = primaryColor)
             }
@@ -136,18 +147,8 @@ fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, t
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(stringResource(id = resource.descRes), fontSize = 12.sp, color = textColor.copy(alpha = 0.6f), maxLines = 2)
                 Spacer(modifier = Modifier.height(8.dp))
-                
-                // نمایش وضعیت دسترسی به صورت Badge
-                val (accessText, accessColor) = when (FakeData.currentUser.role) { 
-                    "CEO" -> Pair(stringResource(id = R.string.access_full), primaryColor); 
-                    "ADMIN", "MANAGER" -> Pair(stringResource(id = R.string.access_admin), primaryColor); 
-                    else -> Pair(stringResource(id = R.string.access_denied), Color.Red) 
-                }
-                Box(
-                    modifier = Modifier.background(accessColor.copy(alpha = 0.1f), RoundedCornerShape(4.dp)).padding(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    Text(accessText, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = accessColor)
-                }
+                val (accessText, accessColor) = when (FakeData.currentUser.role) { "CEO" -> Pair(stringResource(id = R.string.access_full), primaryColor); "ADMIN", "MANAGER" -> Pair(stringResource(id = R.string.access_admin), primaryColor); else -> Pair(stringResource(id = R.string.access_denied), Color.Red) }
+                Text(accessText, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = accessColor)
             }
         }
     }
@@ -188,8 +189,6 @@ fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
 fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLogout: () -> Unit) {
     val scope = rememberCoroutineScope()
     Column(modifier = Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        
-        // هدر پروفایل طبق طرح استاد
         Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = primaryColor), shape = RoundedCornerShape(16.dp)) {
             Column(modifier = Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(modifier = Modifier.size(80.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.2f)), contentAlignment = Alignment.Center) {
@@ -203,7 +202,6 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        // کارت‌های اطلاعات
         Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = surfaceColor), shape = RoundedCornerShape(12.dp)) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
