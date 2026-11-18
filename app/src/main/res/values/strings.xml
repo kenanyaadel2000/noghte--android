@@ -26,6 +26,12 @@
     <string name="terms_link">قوانین</string>
     <string name="terms_suffix"> را می‌پذیرم</string>
     <string name="terms_prefix"></string>
+    <!-- Logs Filters -->
+    <string name="filter_all">همه</string>
+    <string name="filter_auth">ورود / خروج</string>
+    <string name="filter_requests">درخواست‌ها</string>
+    <string name="request_sent_status">در انتظار تایید</string>
+    <string name="log_request_access">درخواست دسترسی به سیستم</string>
     <!-- Admin Panel -->
     <string name="admin_panel_title">پنل مدیریت</string>
     <string name="admin_panel_button">ورود به پنل مدیریت</string>
