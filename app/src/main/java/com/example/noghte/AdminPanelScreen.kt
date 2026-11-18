@@ -6,8 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,8 +33,13 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     
+    // وضعیت‌های جستجو و مرتب‌سازی
+    var searchQuery by remember { mutableStateOf("") }
+    var sortByRole by remember { mutableStateOf(false) } // false = Name, true = Role
+    
     val scope = rememberCoroutineScope()
 
+    // تابع برای دریافت لیست کاربران
     fun fetchUsers() {
         scope.launch {
             isLoading = true
@@ -54,9 +59,28 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
         }
     }
 
+    // ثبت لاگ هنگام ورود ادمین به پنل (فقط یک بار)
     LaunchedEffect(Unit) {
         fetchUsers()
+        FakeData.logs.add(0, AccessLog(
+            id = UUID.randomUUID().toString(),
+            actionRes = R.string.admin_login_log_action,
+            resourceName = "Admin Panel",
+            status = "ALLOWED",
+            timestamp = "همین الان",
+            type = "LOGIN"
+        ))
     }
+
+    // فیلتر و مرتب‌سازی کاربران
+    val filteredAndSortedUsers = usersList
+        .filter { 
+            it["name"].toString().contains(searchQuery, ignoreCase = true) || 
+            it["email"].toString().contains(searchQuery, ignoreCase = true) 
+        }
+        .sortedBy { 
+            if (sortByRole) it["role"].toString() else it["name"].toString() 
+        }
 
     Scaffold(
         containerColor = backgroundColor,
@@ -72,28 +96,69 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
             )
         }
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+        Column(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+            
+            // نوار جستجو
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                placeholder = { Text(stringResource(id = R.string.search_users_placeholder), fontSize = 14.sp) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = primaryColor) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = primaryColor,
+                    unfocusedBorderColor = textColor.copy(alpha = 0.3f),
+                    focusedTextColor = textColor,
+                    unfocusedTextColor = textColor
+                ),
+                singleLine = true
+            )
+
+            // دکمه‌های مرتب‌سازی
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilterChip(
+                    selected = !sortByRole,
+                    onClick = { sortByRole = false },
+                    label = { Text(stringResource(id = R.string.sort_by_name), fontSize = 12.sp) },
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = primaryColor, selectedLabelColor = Color.White)
+                )
+                FilterChip(
+                    selected = sortByRole,
+                    onClick = { sortByRole = true },
+                    label = { Text(stringResource(id = R.string.sort_by_role), fontSize = 12.sp) },
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = primaryColor, selectedLabelColor = Color.White)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // لیست کاربران
             if (isLoading) {
-                CircularProgressIndicator(color = primaryColor, modifier = Modifier.align(Alignment.Center))
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = primaryColor)
+                }
             } else if (errorMessage != null) {
-                Text(text = errorMessage!!, color = Color.Red, modifier = Modifier.align(Alignment.Center).padding(16.dp))
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = errorMessage!!, color = Color.Red, modifier = Modifier.padding(16.dp))
+                }
+            } else if (filteredAndSortedUsers.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("کاربری یافت نشد", color = textColor)
+                }
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    item {
-                        Text(
-                            text = stringResource(id = R.string.users_list_title),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = textColor,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                    }
-                    
-                    items(usersList) { userData ->
+                    items(filteredAndSortedUsers) { userData ->
                         val name = userData["name"]?.toString() ?: "Unknown"
                         val email = userData["email"]?.toString() ?: "No Email"
                         val currentRole = userData["role"]?.toString() ?: "VIEWER"
@@ -117,8 +182,10 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
                                                 data = mapOf("role" to newRole)
                                             )
                                         }
-                                        fetchUsers() 
-                                    } catch (e: Exception) {}
+                                        fetchUsers() // بروزرسانی لیست بعد از تغییر
+                                    } catch (e: Exception) {
+                                        // مدیریت خطا
+                                    }
                                 }
                             }
                         )
