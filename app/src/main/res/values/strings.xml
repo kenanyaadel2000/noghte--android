@@ -37,6 +37,10 @@
     <string name="terms_suffix"> را می‌پذیرم</string>
     <string name="terms_prefix"></string>
     
+    <!-- ✅ این دو خط اضافه شدند -->
+    <string name="confirm_password_label">تکرار رمز عبور</string>
+    <string name="error_password_mismatch">رمز عبور و تکرار آن یکسان نیستند.</string>
+
     <string name="error_invalid_email">فرمت ایمیل وارد شده صحیح نیست.</string>
     <string name="error_not_verified">حساب شما هنوز توسط ادمین تایید نشده است. لطفا منتظر بمانید.</string>
     <string name="error_invalid_credentials">ایمیل یا رمز عبور اشتباه است.</string>
