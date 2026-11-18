@@ -1,41 +1,38 @@
 package com.example.noghte
 
 import androidx.annotation.StringRes
+import androidx.compose.runtime.mutableStateListOf
 
-// ۱. مدل کاربر با فیلدهای جدید
 data class User(
-    val id: String, // آیدی Appwrite
+    val id: String,
     val name: String,
     val email: String,
-    val role: String, // CEO, ADMIN, VIEWER
+    val role: String,
     val hasRequestedAccess: Boolean = false,
     val twoFactorEnabled: Boolean = false
 )
 
-// ۲. مدل منابع با فیلدهای جدید
 data class Resource(
     val id: String,
     @StringRes val nameRes: Int,
-    val type: String, // API, WEB_APP, DATABASE, GPU
+    val type: String,
     @StringRes val descRes: Int,
-    val requiredRole: String, // نقش مورد نیاز (مثلا VIEWER)
-    val lastAccess: String, // مثلا "۱۰:۳۰ - ۱۴۰۳/۰۵/۲۵"
-    val status: String, // "ACTIVE" یا "INACTIVE"
+    val requiredRole: String,
+    val lastAccess: String,
+    val status: String,
     val allowedActions: List<String> = emptyList()
 )
 
-// ۳. مدل لاگ‌ها
 data class AccessLog(
     val id: String,
     @StringRes val actionRes: Int,
     val resourceName: String,
-    val status: String, // ALLOWED, DENIED
+    val status: String, // ALLOWED, DENIED, PENDING
     val timestamp: String,
     val type: String // LOGIN, LOGOUT, REQUEST, JOB
 )
 
 object FakeData {
-    // کاربر فعلی (حالا با شناسه رندوم ثابت و وضعیت 2FA)
     var currentUser = User(
         id = "usr_8f3a2b1c", 
         name = "علی محمدی", 
@@ -52,52 +49,15 @@ object FakeData {
         User("usr_1f2e3d4c", "محمد رضایی", "mohammad@company.com", "VIEWER")
     )
 
-    // منابع جدید طبق لیست تو و طرح استاد
     val resources = listOf(
-        Resource(
-            id = "1",
-            nameRes = R.string.res_fin_name,
-            type = "API",
-            descRes = R.string.res_fin_desc,
-            requiredRole = "viewer",
-            lastAccess = "۱۰:۳۰ - ۱۴۰۳/۰۵/۲۵",
-            status = "ACTIVE",
-            allowedActions = listOf("GET /api/v1/transactions", "GET /api/v1/accounts", "GET /api/v1/reports")
-        ),
-        Resource(
-            id = "2",
-            nameRes = R.string.res_admin_name,
-            type = "WEB_APP",
-            descRes = R.string.res_admin_desc,
-            requiredRole = "admin",
-            lastAccess = "۱۰:۱۵ - ۱۴۰۳/۰۵/۲۵",
-            status = "ACTIVE",
-            allowedActions = listOf("GET /admin/dashboard", "POST /admin/users", "DELETE /admin/logs")
-        ),
-        Resource(
-            id = "3",
-            nameRes = R.string.res_db_name,
-            type = "DATABASE",
-            descRes = R.string.res_db_desc,
-            requiredRole = "viewer",
-            lastAccess = "۰۹:۰۰ - ۱۴۰۳/۰۵/۲۴",
-            status = "ACTIVE",
-            allowedActions = listOf("SELECT * FROM reports", "SELECT * FROM metrics")
-        ),
-        Resource(
-            id = "4",
-            nameRes = R.string.res_gpu_name,
-            type = "GPU",
-            descRes = R.string.res_gpu_desc,
-            requiredRole = "admin",
-            lastAccess = "۰۸:۳۰ - ۱۴۰۳/۰۵/۲۴",
-            status = "INACTIVE",
-            allowedActions = listOf("POST /api/v1/jobs/train", "GET /api/v1/jobs/status")
-        )
+        Resource("1", R.string.res_fin_name, "API", R.string.res_fin_desc, "viewer", "۱۰:۳۰ - ۱۴۰۳/۰۵/۲۵", "ACTIVE", listOf("GET /api/v1/transactions", "GET /api/v1/accounts", "GET /api/v1/reports")),
+        Resource("2", R.string.res_admin_name, "WEB_APP", R.string.res_admin_desc, "admin", "۱۰:۱۵ - ۱۴۰۳/۰۵/۲۵", "ACTIVE", listOf("GET /admin/dashboard", "POST /admin/users", "DELETE /admin/logs")),
+        Resource("3", R.string.res_db_name, "DATABASE", R.string.res_db_desc, "viewer", "۰۹:۰۰ - ۱۴۰۳/۰۵/۲۴", "ACTIVE", listOf("SELECT * FROM reports", "SELECT * FROM metrics")),
+        Resource("4", R.string.res_gpu_name, "GPU", R.string.res_gpu_desc, "admin", "۰۸:۳۰ - ۱۴۰۳/۰۵/۲۴", "INACTIVE", listOf("POST /api/v1/jobs/train", "GET /api/v1/jobs/status"))
     )
 
-    // لاگ‌ها با فیلد Type برای فیلتر کردن
-    val logs = listOf(
+    // ✅ استفاده از mutableStateListOf برای اینکه بشه لاگ جدید اضافه کرد
+    val logs = mutableStateListOf(
         AccessLog("1", R.string.log_login, "OIDC Login", "ALLOWED", "۱۰:۳۰ - ۱۴۰۳/۰۵/۲۵", "LOGIN"),
         AccessLog("2", R.string.log_req_access, "Financial API", "ALLOWED", "۱۰:۳۲ - ۱۴۰۳/۰۵/۲۵", "REQUEST"),
         AccessLog("3", R.string.log_view_dash, "Admin Panel", "DENIED", "۱۰:۴۵ - ۱۴۰۳/۰۵/۲۵", "REQUEST"),
