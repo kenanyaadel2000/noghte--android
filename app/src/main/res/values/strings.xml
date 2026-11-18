@@ -54,6 +54,11 @@
     <string name="status_active">فعال</string>
     <string name="status_inactive">غیرفعال</string>
     <string name="request_access_btn">درخواست دسترسی</string>
+    <!-- Admin Panel Extra -->
+    <string name="search_users_placeholder">جستجوی کاربر...</string>
+    <string name="sort_by_name">مرتب‌سازی با نام</string>
+    <string name="sort_by_role">مرتب‌سازی با نقش</string>
+    <string name="admin_login_log_action">ورود مدیر به پنل مدیریت</string>
 
 <!-- Profile & Admin -->
     <string name="user_id_label">شناسه کاربری</string>
