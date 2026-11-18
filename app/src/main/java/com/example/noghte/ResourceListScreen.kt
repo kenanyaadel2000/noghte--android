@@ -46,7 +46,6 @@ fun ResourceListScreen(
 
     val isAdminOrCeo = FakeData.currentUser.role == "ADMIN" || FakeData.currentUser.role == "CEO"
 
-    // فیلتر کردن منابع: ویوورها نباید Admin Panel رو ببینن
     val baseResources = if (FakeData.currentUser.role == "VIEWER") {
         FakeData.resources.filter { it.id != "2" } 
     } else {
@@ -376,4 +375,5 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Security, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Column
+                        Column {
+                            Text(stringResource(id = R.st
