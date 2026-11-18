@@ -47,7 +47,7 @@ fun ResourceListScreen(
     val isAdminOrCeo = FakeData.currentUser.role == "ADMIN" || FakeData.currentUser.role == "CEO"
 
     val baseResources = if (FakeData.currentUser.role == "VIEWER") {
-        FakeData.resources.filter { it.id != "2" } 
+        FakeData.resources.filter { it.id != "2" }
     } else {
         FakeData.resources
     }
@@ -63,34 +63,34 @@ fun ResourceListScreen(
         topBar = {
             if (isSearchActive) {
                 TopAppBar(
-                    title = { 
+                    title = {
                         TextField(
-                            value = searchQuery, 
-                            onValueChange = { searchQuery = it }, 
-                            placeholder = { Text(stringResource(id = R.string.search_placeholder)) }, 
-                            modifier = Modifier.fillMaxWidth(), 
+                            value = searchQuery,
+                            onValueChange = { searchQuery = it },
+                            placeholder = { Text(stringResource(id = R.string.search_placeholder)) },
+                            modifier = Modifier.fillMaxWidth(),
                             colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent, 
-                                unfocusedContainerColor = Color.Transparent, 
-                                focusedIndicatorColor = Color.Transparent, 
-                                unfocusedIndicatorColor = Color.Transparent, 
-                                focusedTextColor = Color.White, 
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White
-                            ), 
+                            ),
                             singleLine = true
-                        ) 
+                        )
                     },
-                    navigationIcon = { 
-                        IconButton(onClick = { isSearchActive = false; searchQuery = "" }) { 
-                            Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.White) 
-                        } 
+                    navigationIcon = {
+                        IconButton(onClick = { isSearchActive = false; searchQuery = "" }) {
+                            Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.White)
+                        }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = primaryColor)
                 )
             } else {
                 TopAppBar(
                     title = {
-                        val title = when(selectedTab) {
+                        val title = when (selectedTab) {
                             0 -> stringResource(id = R.string.tab_resources)
                             1 -> stringResource(id = R.string.tab_logs)
                             2 -> stringResource(id = R.string.tab_profile)
@@ -100,12 +100,12 @@ fun ResourceListScreen(
                     },
                     actions = {
                         if (selectedTab == 0) {
-                            IconButton(onClick = { isSearchActive = true }) { 
-                                Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White) 
+                            IconButton(onClick = { isSearchActive = true }) {
+                                Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White)
                             }
                         }
-                        IconButton(onClick = onNavigateToSettings) { 
-                            Icon(Icons.Default.Settings, contentDescription = "Settings", tint = Color.White) 
+                        IconButton(onClick = onNavigateToSettings) {
+                            Icon(Icons.Default.Settings, contentDescription = "Settings", tint = Color.White)
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = primaryColor)
@@ -120,8 +120,8 @@ fun ResourceListScreen(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.Black, selectedTextColor = primaryColor, 
-                        indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), 
+                        selectedIconColor = Color.Black, selectedTextColor = primaryColor,
+                        indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f),
                         unselectedTextColor = textColor.copy(alpha = 0.6f)
                     )
                 )
@@ -131,8 +131,8 @@ fun ResourceListScreen(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.Black, selectedTextColor = primaryColor, 
-                        indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), 
+                        selectedIconColor = Color.Black, selectedTextColor = primaryColor,
+                        indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f),
                         unselectedTextColor = textColor.copy(alpha = 0.6f)
                     )
                 )
@@ -142,12 +142,12 @@ fun ResourceListScreen(
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.Black, selectedTextColor = primaryColor, 
-                        indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), 
+                        selectedIconColor = Color.Black, selectedTextColor = primaryColor,
+                        indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f),
                         unselectedTextColor = textColor.copy(alpha = 0.6f)
                     )
                 )
-                
+
                 if (isAdminOrCeo) {
                     NavigationBarItem(
                         icon = { Icon(Icons.Default.AdminPanelSettings, contentDescription = null) },
@@ -155,8 +155,8 @@ fun ResourceListScreen(
                         selected = selectedTab == 3,
                         onClick = { selectedTab = 3 },
                         colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Color.Black, selectedTextColor = primaryColor, 
-                            indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), 
+                            selectedIconColor = Color.Black, selectedTextColor = primaryColor,
+                            indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f),
                             unselectedTextColor = textColor.copy(alpha = 0.6f)
                         )
                     )
@@ -168,24 +168,24 @@ fun ResourceListScreen(
             when (selectedTab) {
                 0 -> {
                     if (filteredResources.isEmpty()) {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { 
-                            Text(stringResource(id = R.string.no_resources_found), color = textColor) 
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text(stringResource(id = R.string.no_resources_found), color = textColor)
                         }
                     } else {
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize(), 
-                            contentPadding = PaddingValues(16.dp), 
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            items(filteredResources) { resource -> 
-                                ResourceCard(resource, primaryColor, surfaceColor, textColor, onClick = { onResourceClick(resource.id) }) 
+                            items(filteredResources) { resource ->
+                                ResourceCard(resource, primaryColor, surfaceColor, textColor, onClick = { onResourceClick(resource.id) })
                             }
                         }
                     }
                 }
                 1 -> LogsTab(primaryColor, surfaceColor, textColor)
                 2 -> ProfileTab(primaryColor, surfaceColor, textColor, onLogout)
-                3 -> AdminPanelScreen(onBackClick = { selectedTab = 0 }) 
+                3 -> AdminPanelScreen(onBackClick = { selectedTab = 0 })
             }
         }
     }
@@ -194,19 +194,19 @@ fun ResourceListScreen(
 @Composable
 fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, textColor: Color, onClick: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() }, 
-        colors = CardDefaults.cardColors(containerColor = surfaceColor), 
+        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        colors = CardDefaults.cardColors(containerColor = surfaceColor),
         shape = RoundedCornerShape(12.dp)
     ) {
         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            val icon = when (resource.type) { 
+            val icon = when (resource.type) {
                 "API" -> Icons.Default.Link
                 "WEB_APP" -> Icons.Default.Language
                 "DATABASE" -> Icons.Default.Storage
-                else -> Icons.Default.Star 
+                else -> Icons.Default.Star
             }
             Box(
-                modifier = Modifier.size(40.dp).background(primaryColor.copy(alpha = 0.15f), RoundedCornerShape(8.dp)), 
+                modifier = Modifier.size(40.dp).background(primaryColor.copy(alpha = 0.15f), RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(imageVector = icon, contentDescription = null, tint = primaryColor)
@@ -217,10 +217,10 @@ fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, t
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(stringResource(id = resource.descRes), fontSize = 12.sp, color = textColor.copy(alpha = 0.6f), maxLines = 2)
                 Spacer(modifier = Modifier.height(8.dp))
-                val (accessText, accessColor) = when (FakeData.currentUser.role) { 
+                val (accessText, accessColor) = when (FakeData.currentUser.role) {
                     "CEO" -> Pair(stringResource(id = R.string.access_full), primaryColor)
                     "ADMIN", "MANAGER" -> Pair(stringResource(id = R.string.access_admin), primaryColor)
-                    else -> Pair(stringResource(id = R.string.access_denied), Color.Red) 
+                    else -> Pair(stringResource(id = R.string.access_denied), Color.Red)
                 }
                 Text(accessText, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = accessColor)
             }
@@ -271,8 +271,8 @@ fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
         ) {
             items(filteredLogs) { log ->
                 Card(
-                    modifier = Modifier.fillMaxWidth(), 
-                    colors = CardDefaults.cardColors(containerColor = surfaceColor), 
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = surfaceColor),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -288,7 +288,7 @@ fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
                             isPending -> Icons.Default.HourglassEmpty
                             else -> Icons.Default.Cancel
                         }
-                        
+
                         Icon(statusIcon, contentDescription = null, tint = statusColor, modifier = Modifier.size(24.dp))
                         Spacer(modifier = Modifier.width(16.dp))
                         Column(modifier = Modifier.weight(1f)) {
@@ -306,7 +306,7 @@ fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
 @Composable
 fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLogout: () -> Unit) {
     val scope = rememberCoroutineScope()
-    
+
     var is2FAEnabled by remember { mutableStateOf(FakeData.currentUser.twoFactorEnabled) }
     var hasRequested by remember { mutableStateOf(FakeData.currentUser.hasRequestedAccess) }
 
@@ -314,9 +314,10 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp), 
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // ---------- کارت اطلاعات کاربر ----------
         Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = primaryColor), shape = RoundedCornerShape(16.dp)) {
             Column(modifier = Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(modifier = Modifier.size(80.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.2f)), contentAlignment = Alignment.Center) {
@@ -327,12 +328,14 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
                 Text(FakeData.currentUser.email, fontSize = 12.sp, color = Color.White.copy(alpha = 0.8f))
             }
         }
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
+        // ---------- کارت جزئیات ----------
         Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = surfaceColor), shape = RoundedCornerShape(12.dp)) {
             Column(modifier = Modifier.padding(16.dp)) {
-                
+
+                // User ID
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Fingerprint, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
@@ -341,25 +344,27 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
                     }
                     Text(FakeData.currentUser.id, fontWeight = FontWeight.Bold, color = textColor)
                 }
-                
+
                 Divider(modifier = Modifier.padding(vertical = 12.dp), color = textColor.copy(alpha = 0.1f))
 
+                // Role
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Badge, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(stringResource(id = R.string.role_label), color = textColor.copy(alpha = 0.6f))
                     }
-                    val translatedRole = when (FakeData.currentUser.role) { 
+                    val translatedRole = when (FakeData.currentUser.role) {
                         "CEO" -> stringResource(id = R.string.role_ceo)
                         "ADMIN" -> stringResource(id = R.string.role_admin)
-                        else -> stringResource(id = R.string.role_viewer) 
+                        else -> stringResource(id = R.string.role_viewer)
                     }
                     Text(translatedRole, fontWeight = FontWeight.Bold, color = primaryColor)
                 }
-                
+
                 Divider(modifier = Modifier.padding(vertical = 12.dp), color = textColor.copy(alpha = 0.1f))
-                
+
+                // Organization
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Business, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
@@ -368,12 +373,13 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
                     }
                     Text(stringResource(id = R.string.org_value), fontWeight = FontWeight.Bold, color = textColor)
                 }
-                
+
                 Divider(modifier = Modifier.padding(vertical = 12.dp), color = textColor.copy(alpha = 0.1f))
 
+                // ✅ بخش 2FA که در فایل شما ناقص بود
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Security, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Column {
-                            Text(stringResource(id = R.st
+           
