@@ -43,7 +43,18 @@ fun ResourceListScreen(
 
     val isAdminOrCeo = FakeData.currentUser.role == "ADMIN" || FakeData.currentUser.role == "CEO"
 
-    val filteredResources = if (searchQuery.isEmpty()) FakeData.resources else FakeData.resources.filter { it.nameRes.toString().contains(searchQuery, ignoreCase = true) }
+    // ✅ فیلتر کردن منابع: ویوورها نباید Admin Panel رو ببینن
+val baseResources = if (FakeData.currentUser.role == "VIEWER") {
+    FakeData.resources.filter { it.id != "2" } // ID 2 همون Admin Panel هست
+} else {
+    FakeData.resources
+}
+
+val filteredResources = if (searchQuery.isEmpty()) {
+    baseResources
+} else {
+    baseResources.filter { it.nameRes.toString().contains(searchQuery, ignoreCase = true) }
+}
 
     Scaffold(
         containerColor = backgroundColor,
