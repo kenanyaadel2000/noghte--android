@@ -37,6 +37,10 @@
     <string name="terms_link">rules</string>
     <string name="terms_suffix"></string>
 
+    <!-- ✅ این دو خط اضافه شدند -->
+    <string name="confirm_password_label">Confirm Password</string>
+    <string name="error_password_mismatch">Passwords do not match.</string>
+
     <string name="error_invalid_email">Invalid email format.</string>
     <string name="error_not_verified">Your account has not been approved by the admin yet. Please wait.</string>
     <string name="error_invalid_credentials">Invalid email or password.</string>
