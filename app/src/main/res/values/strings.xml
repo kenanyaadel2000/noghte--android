@@ -33,7 +33,27 @@
     <string name="role_updated_success">نقش کاربر با موفقیت تغییر کرد.</string>
     <string name="role_update_error">خطا در تغییر نقش کاربر.</string>
     <string name="loading_users">در حال دریافت لیست کاربران...</string>
-    
+    <!-- Resources & Details -->
+    <string name="res_admin_name">Admin Panel</string>
+    <string name="res_admin_desc">پنل مدیریت سیستم برای کاربران با نقش ادمین.</string>
+    <string name="res_db_name">Analytics DB</string>
+    <string name="res_db_desc">دیتابیس تحلیلی برای کوئری‌های گزارش‌گیری سنگین و پردازش داده‌های کلان.</string>
+    <string name="res_gpu_name">ML Training Server</string>
+    <string name="res_gpu_desc">سرور آموزش مدل‌های یادگیری ماشین با GPU.</string>
+
+<!-- Resource Details Info -->
+    <string name="required_role_label">نقش مورد نیاز:</string>
+    <string name="last_access_label">آخرین دسترسی:</string>
+    <string name="status_label">وضعیت:</string>
+    <string name="status_active">فعال</string>
+    <string name="status_inactive">غیرفعال</string>
+    <string name="request_access_btn">درخواست دسترسی</string>
+
+<!-- Profile & Admin -->
+    <string name="user_id_label">شناسه کاربری</string>
+    <string name="two_factor_label">احراز هویت دو مرحله‌ای</string>
+    <string name="two_factor_desc">فعال / غیرفعال</string>
+    <string name="admin_tab">مدیریت</string>
     
     <!-- کلمات قبلی را نگه دار و این‌ها را اضافه کن -->
     
