@@ -152,17 +152,15 @@ fun AppNavigation(
             )
         }
         "settings" -> {
-            SettingsScreen(
-                isDarkTheme = isDarkTheme,
-                onThemeChange = onThemeChange,
-                onLanguageChange = changeLanguage,
-                onNavigateToAdminPanel = { currentScreen = "admin_panel" },
-                onBackClick = { currentScreen = "home" }
-            )
+           SettingsScreen(
+             isDarkTheme = isDarkTheme,
+             onThemeChange = onThemeChange,
+             onLanguageChange = changeLanguage,
+             onBackClick = { currentScreen = "home" }
+          )
         }
-        "admin_panel" -> {
-            AdminPanelScreen(onBackClick = { currentScreen = "settings" })
-        }
+
+// ❌ بخش "admin_panel" رو به طور کامل پاک کن
         "detail" -> {
             ResourceDetailScreen(
                 resourceId = selectedResourceId ?: "",
