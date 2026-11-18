@@ -463,4 +463,180 @@ fun ProfileTab(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrange
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.Badge,
+                            contentDescription = null,
+                            tint = primaryColor,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            stringResource(id = R.string.role_label),
+                            color = textColor.copy(alpha = 0.6f)
+                        )
+                    }
+                    val translatedRole = when (FakeData.currentUser.role) {
+                        "CEO" -> stringResource(id = R.string.role_ceo)
+                        "ADMIN" -> stringResource(id = R.string.role_admin)
+                        else -> stringResource(id = R.string.role_viewer)
+                    }
+                    Text(
+                        translatedRole,
+                        fontWeight = FontWeight.Bold,
+                        color = primaryColor
+                    )
+                }
+
+                Divider(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    color = textColor.copy(alpha = 0.1f)
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.Business,
+                            contentDescription = null,
+                            tint = primaryColor,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            stringResource(id = R.string.org_label),
+                            color = textColor.copy(alpha = 0.6f)
+                        )
+                    }
+                    Text(
+                        stringResource(id = R.string.org_value),
+                        fontWeight = FontWeight.Bold,
+                        color = textColor
+                    )
+                }
+
+                Divider(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    color = textColor.copy(alpha = 0.1f)
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.Security,
+                            contentDescription = null,
+                            tint = primaryColor,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text(
+                                stringResource(id = R.string.two_factor_label),
+                                color = textColor.copy(alpha = 0.6f)
+                            )
+                            Text(
+                                stringResource(id = R.string.two_factor_desc),
+                                color = textColor.copy(alpha = 0.4f),
+                                fontSize = 10.sp
+                            )
+                        }
+                    }
+
+                    Switch(
+                        checked = is2FAEnabled,
+                        onCheckedChange = { enabled ->
+                            is2FAEnabled = enabled
+                            FakeData.currentUser =
+                                FakeData.currentUser.copy(twoFactorEnabled = enabled)
+                        },
+                        colors = SwitchDefaults.colors(checkedThumbColor = primaryColor)
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (FakeData.currentUser.role == "VIEWER") {
+            Button(
+                onClick = {
+                    if (!hasRequested) {
+                        hasRequested = true
+                        FakeData.currentUser =
+                            FakeData.currentUser.copy(hasRequestedAccess = true)
+
+                        FakeData.logs.add(
+                            0,
+                            AccessLog(
+                                id = UUID.randomUUID().toString(),
+                                actionRes = R.string.log_request_access,
+                                resourceName = "System",
+                                status = "PENDING",
+                                timestamp = "همین الان",
+                                type = "REQUEST"
+                            )
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                enabled = !hasRequested,
+                colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
+            ) {
+                Text(
+                    text = stringResource(
+                        id = if (hasRequested) {
+                            R.string.request_sent_status
+                        } else {
+                            R.string.request_access_button
+                        }
+                    ),
+                    color = Color.White
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+
+        Button(
+            onClick = {
+                scope.launch {
+                    try {
+                        withContext(Dispatchers.IO) {
+                            if (FakeData.currentUser.id != "guest") {
+                                AppwriteClient.account.deleteSession("current")
+                            }
+                        }
+                    } catch (_: Exception) {
+                        // خروج از برنامه حتی اگر حذف نشست از سرور ناموفق بود.
+                    } finally {
+                        onLogout()
+                    }
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+        ) {
+            Icon(Icons.Default.ExitToApp, contentDescription = null)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = stringResource(id = R.string.logout_button),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
