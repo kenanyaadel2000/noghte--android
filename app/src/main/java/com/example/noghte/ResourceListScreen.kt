@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +46,6 @@ fun ResourceListScreen(
 
     val isAdminOrCeo = FakeData.currentUser.role == "ADMIN" || FakeData.currentUser.role == "CEO"
 
-    // فیلتر کردن منابع: ویوورها نباید Admin Panel رو ببینن
     val baseResources = if (FakeData.currentUser.role == "VIEWER") {
         FakeData.resources.filter { it.id != "2" } 
     } else {
@@ -164,19 +164,71 @@ fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, t
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
-    LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        items(FakeData.logs) { log ->
-            Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = surfaceColor), shape = RoundedCornerShape(12.dp)) {
-                Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    val isAllowed = log.status == "ALLOWED"
-                    Icon(if (isAllowed) Icons.Default.CheckCircle else Icons.Default.Cancel, contentDescription = null, tint = if (isAllowed) Color(0xFF4CAF50) else Color(0xFFF44336), modifier = Modifier.size(24.dp))
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(stringResource(id = log.actionRes), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = textColor)
-                        Text(log.resourceName, fontSize = 12.sp, color = textColor.copy(alpha = 0.6f))
-                        Text(log.timestamp, fontSize = 10.sp, color = textColor.copy(alpha = 0.4f))
+    var selectedFilter by remember { mutableStateOf("ALL") }
+
+    val filteredLogs = when (selectedFilter) {
+        "AUTH" -> FakeData.logs.filter { it.type == "LOGIN" || it.type == "LOGOUT" }
+        "REQUEST" -> FakeData.logs.filter { it.type == "REQUEST" }
+        else -> FakeData.logs
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        // نوار فیلتر
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            FilterChip(
+                selected = selectedFilter == "ALL",
+                onClick = { selectedFilter = "ALL" },
+                label = { Text(stringResource(id = R.string.filter_all), fontSize = 12.sp) },
+                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = primaryColor, selectedLabelColor = Color.White)
+            )
+            FilterChip(
+                selected = selectedFilter == "AUTH",
+                onClick = { selectedFilter = "AUTH" },
+                label = { Text(stringResource(id = R.string.filter_auth), fontSize = 12.sp) },
+                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = primaryColor, selectedLabelColor = Color.White)
+            )
+            FilterChip(
+                selected = selectedFilter == "REQUEST",
+                onClick = { selectedFilter = "REQUEST" },
+                label = { Text(stringResource(id = R.string.filter_requests), fontSize = 12.sp) },
+                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = primaryColor, selectedLabelColor = Color.White)
+            )
+        }
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(filteredLogs) { log ->
+                Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = surfaceColor), shape = RoundedCornerShape(12.dp)) {
+                    Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        val isAllowed = log.status == "ALLOWED"
+                        val isPending = log.status == "PENDING"
+                        val statusColor = when {
+                            isAllowed -> Color(0xFF4CAF50)
+                            isPending -> Color(0xFFFFC107)
+                            else -> Color(0xFFF44336)
+                        }
+                        val statusIcon = when {
+                            isAllowed -> Icons.Default.CheckCircle
+                            isPending -> Icons.Default.HourglassEmpty
+                            else -> Icons.Default.Cancel
+                        }
+                        
+                        Icon(statusIcon, contentDescription = null, tint = statusColor, modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(stringResource(id = log.actionRes), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = textColor)
+                            Text(log.resourceName, fontSize = 12.sp, color = textColor.copy(alpha = 0.6f))
+                            Text(log.timestamp, fontSize = 10.sp, color = textColor.copy(alpha = 0.4f))
+                        }
                     }
                 }
             }
@@ -188,9 +240,7 @@ fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
 fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLogout: () -> Unit) {
     val scope = rememberCoroutineScope()
     
-    // وضعیت 2FA (ذخیره در FakeData)
     var is2FAEnabled by remember { mutableStateOf(FakeData.currentUser.twoFactorEnabled) }
-    // وضعیت درخواست دسترسی
     var hasRequested by remember { mutableStateOf(FakeData.currentUser.hasRequestedAccess) }
 
     Column(
@@ -218,7 +268,6 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
         Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = surfaceColor), shape = RoundedCornerShape(12.dp)) {
             Column(modifier = Modifier.padding(16.dp)) {
                 
-                // شناسه کاربری
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Fingerprint, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
@@ -230,7 +279,6 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
                 
                 Divider(modifier = Modifier.padding(vertical = 12.dp), color = textColor.copy(alpha = 0.1f))
 
-                // نقش
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Badge, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
@@ -243,7 +291,6 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
                 
                 Divider(modifier = Modifier.padding(vertical = 12.dp), color = textColor.copy(alpha = 0.1f))
                 
-                // سازمان
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Business, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
@@ -255,7 +302,6 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
                 
                 Divider(modifier = Modifier.padding(vertical = 12.dp), color = textColor.copy(alpha = 0.1f))
 
-                // احراز هویت دو مرحله‌ای
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Security, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
@@ -279,42 +325,22 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // دکمه درخواست دسترسی (فقط برای ویوور)
         if (FakeData.currentUser.role == "VIEWER") {
             Button(
                 onClick = { 
                     if (!hasRequested) {
                         hasRequested = true
                         FakeData.currentUser = FakeData.currentUser.copy(hasRequestedAccess = true)
+                        
+                        // ✅ اضافه کردن لاگ جدید به لیست به صورت داینامیک
+                        FakeData.logs.add(0, AccessLog(
+                            id = UUID.randomUUID().toString(),
+                            actionRes = R.string.log_request_access,
+                            resourceName = "System",
+                            status = "PENDING",
+                            timestamp = "همین الان",
+                            type = "REQUEST"
+                        ))
                     }
                 },
-                modifier = Modifier.fillMaxWidth().height(50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (hasRequested) Color.Gray else primaryColor, 
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(12.dp),
-                enabled = !hasRequested
-            ) {
-                Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = if (hasRequested) "درخواست ارسال شد" else stringResource(id = R.string.request_access_btn), 
-                    fontSize = 16.sp, fontWeight = FontWeight.Bold
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-        
-        Spacer(modifier = Modifier.weight(1f))
-        
-        // دکمه خروج
-        Button(onClick = { scope.launch { try { withContext(Dispatchers.IO) { if (FakeData.currentUser.id != "guest") AppwriteClient.account.deleteSession("current") } } catch (e: Exception) {} finally { onLogout() } } }, modifier = Modifier.fillMaxWidth().height(50.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F), contentColor = Color.White), shape = RoundedCornerShape(12.dp)) {
-            Icon(Icons.Default.ExitToApp, contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(id = R.string.logout_button), fontSize = 14.sp, fontWeight = FontWeight.Bold)
-        }
-        
-        Spacer(modifier = Modifier.height(16.dp))
-    }
-}
+                modifier = Modifier.fillMaxWidth().height(50.d
