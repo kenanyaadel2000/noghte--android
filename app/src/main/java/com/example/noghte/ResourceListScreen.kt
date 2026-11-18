@@ -46,6 +46,7 @@ fun ResourceListScreen(
 
     val isAdminOrCeo = FakeData.currentUser.role == "ADMIN" || FakeData.currentUser.role == "CEO"
 
+    // فیلتر کردن منابع: ویوورها نباید Admin Panel رو ببینن
     val baseResources = if (FakeData.currentUser.role == "VIEWER") {
         FakeData.resources.filter { it.id != "2" } 
     } else {
@@ -63,8 +64,28 @@ fun ResourceListScreen(
         topBar = {
             if (isSearchActive) {
                 TopAppBar(
-                    title = { TextField(value = searchQuery, onValueChange = { searchQuery = it }, placeholder = { Text(stringResource(id = R.string.search_placeholder)) }, modifier = Modifier.fillMaxWidth(), colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent, unfocusedContainerColor = Color.Transparent, focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent, focusedTextColor = Color.White, unfocusedTextColor = Color.White), singleLine = true) },
-                    navigationIcon = { IconButton(onClick = { isSearchActive = false; searchQuery = "" }) { Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.White) } },
+                    title = { 
+                        TextField(
+                            value = searchQuery, 
+                            onValueChange = { searchQuery = it }, 
+                            placeholder = { Text(stringResource(id = R.string.search_placeholder)) }, 
+                            modifier = Modifier.fillMaxWidth(), 
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent, 
+                                unfocusedContainerColor = Color.Transparent, 
+                                focusedIndicatorColor = Color.Transparent, 
+                                unfocusedIndicatorColor = Color.Transparent, 
+                                focusedTextColor = Color.White, 
+                                unfocusedTextColor = Color.White
+                            ), 
+                            singleLine = true
+                        ) 
+                    },
+                    navigationIcon = { 
+                        IconButton(onClick = { isSearchActive = false; searchQuery = "" }) { 
+                            Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.White) 
+                        } 
+                    },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = primaryColor)
                 )
             } else {
@@ -80,9 +101,13 @@ fun ResourceListScreen(
                     },
                     actions = {
                         if (selectedTab == 0) {
-                            IconButton(onClick = { isSearchActive = true }) { Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White) }
+                            IconButton(onClick = { isSearchActive = true }) { 
+                                Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White) 
+                            }
                         }
-                        IconButton(onClick = onNavigateToSettings) { Icon(Icons.Default.Settings, contentDescription = "Settings", tint = Color.White) }
+                        IconButton(onClick = onNavigateToSettings) { 
+                            Icon(Icons.Default.Settings, contentDescription = "Settings", tint = Color.White) 
+                        }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = primaryColor)
                 )
@@ -95,21 +120,33 @@ fun ResourceListScreen(
                     label = { Text(stringResource(id = R.string.tab_resources)) },
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
-                    colors = NavigationBarItemDefaults.colors(selectedIconColor = Color.Black, selectedTextColor = primaryColor, indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), unselectedTextColor = textColor.copy(alpha = 0.6f))
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color.Black, selectedTextColor = primaryColor, 
+                        indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), 
+                        unselectedTextColor = textColor.copy(alpha = 0.6f)
+                    )
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Assessment, contentDescription = null) },
                     label = { Text(stringResource(id = R.string.tab_logs)) },
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    colors = NavigationBarItemDefaults.colors(selectedIconColor = Color.Black, selectedTextColor = primaryColor, indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), unselectedTextColor = textColor.copy(alpha = 0.6f))
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color.Black, selectedTextColor = primaryColor, 
+                        indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), 
+                        unselectedTextColor = textColor.copy(alpha = 0.6f)
+                    )
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Person, contentDescription = null) },
                     label = { Text(stringResource(id = R.string.tab_profile)) },
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
-                    colors = NavigationBarItemDefaults.colors(selectedIconColor = Color.Black, selectedTextColor = primaryColor, indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), unselectedTextColor = textColor.copy(alpha = 0.6f))
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color.Black, selectedTextColor = primaryColor, 
+                        indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), 
+                        unselectedTextColor = textColor.copy(alpha = 0.6f)
+                    )
                 )
                 
                 if (isAdminOrCeo) {
@@ -118,7 +155,11 @@ fun ResourceListScreen(
                         label = { Text(stringResource(id = R.string.admin_tab)) },
                         selected = selectedTab == 3,
                         onClick = { selectedTab = 3 },
-                        colors = NavigationBarItemDefaults.colors(selectedIconColor = Color.Black, selectedTextColor = primaryColor, indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), unselectedTextColor = textColor.copy(alpha = 0.6f))
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = Color.Black, selectedTextColor = primaryColor, 
+                            indicatorColor = primaryColor, unselectedIconColor = textColor.copy(alpha = 0.6f), 
+                            unselectedTextColor = textColor.copy(alpha = 0.6f)
+                        )
                     )
                 }
             }
@@ -128,10 +169,18 @@ fun ResourceListScreen(
             when (selectedTab) {
                 0 -> {
                     if (filteredResources.isEmpty()) {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text(stringResource(id = R.string.no_resources_found), color = textColor) }
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { 
+                            Text(stringResource(id = R.string.no_resources_found), color = textColor) 
+                        }
                     } else {
-                        LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            items(filteredResources) { resource -> ResourceCard(resource, primaryColor, surfaceColor, textColor, onClick = { onResourceClick(resource.id) }) }
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(), 
+                            contentPadding = PaddingValues(16.dp), 
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(filteredResources) { resource -> 
+                                ResourceCard(resource, primaryColor, surfaceColor, textColor, onClick = { onResourceClick(resource.id) }) 
+                            }
                         }
                     }
                 }
@@ -145,10 +194,22 @@ fun ResourceListScreen(
 
 @Composable
 fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, textColor: Color, onClick: () -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth().clickable { onClick() }, colors = CardDefaults.cardColors(containerColor = surfaceColor), shape = RoundedCornerShape(12.dp)) {
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable { onClick() }, 
+        colors = CardDefaults.cardColors(containerColor = surfaceColor), 
+        shape = RoundedCornerShape(12.dp)
+    ) {
         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            val icon = when (resource.type) { "API" -> Icons.Default.Link; "WEB_APP" -> Icons.Default.Language; "DATABASE" -> Icons.Default.Storage; else -> Icons.Default.Star }
-            Box(modifier = Modifier.size(40.dp).background(primaryColor.copy(alpha = 0.15f), RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
+            val icon = when (resource.type) { 
+                "API" -> Icons.Default.Link
+                "WEB_APP" -> Icons.Default.Language
+                "DATABASE" -> Icons.Default.Storage
+                else -> Icons.Default.Star 
+            }
+            Box(
+                modifier = Modifier.size(40.dp).background(primaryColor.copy(alpha = 0.15f), RoundedCornerShape(8.dp)), 
+                contentAlignment = Alignment.Center
+            ) {
                 Icon(imageVector = icon, contentDescription = null, tint = primaryColor)
             }
             Spacer(modifier = Modifier.width(16.dp))
@@ -157,7 +218,11 @@ fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, t
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(stringResource(id = resource.descRes), fontSize = 12.sp, color = textColor.copy(alpha = 0.6f), maxLines = 2)
                 Spacer(modifier = Modifier.height(8.dp))
-                val (accessText, accessColor) = when (FakeData.currentUser.role) { "CEO" -> Pair(stringResource(id = R.string.access_full), primaryColor); "ADMIN", "MANAGER" -> Pair(stringResource(id = R.string.access_admin), primaryColor); else -> Pair(stringResource(id = R.string.access_denied), Color.Red) }
+                val (accessText, accessColor) = when (FakeData.currentUser.role) { 
+                    "CEO" -> Pair(stringResource(id = R.string.access_full), primaryColor)
+                    "ADMIN", "MANAGER" -> Pair(stringResource(id = R.string.access_admin), primaryColor)
+                    else -> Pair(stringResource(id = R.string.access_denied), Color.Red) 
+                }
                 Text(accessText, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = accessColor)
             }
         }
@@ -176,7 +241,6 @@ fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // نوار فیلتر
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -207,7 +271,11 @@ fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(filteredLogs) { log ->
-                Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = surfaceColor), shape = RoundedCornerShape(12.dp)) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(), 
+                    colors = CardDefaults.cardColors(containerColor = surfaceColor), 
+                    shape = RoundedCornerShape(12.dp)
+                ) {
                     Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                         val isAllowed = log.status == "ALLOWED"
                         val isPending = log.status == "PENDING"
@@ -250,7 +318,6 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
             .padding(16.dp), 
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // هدر پروفایل
         Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = primaryColor), shape = RoundedCornerShape(16.dp)) {
             Column(modifier = Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(modifier = Modifier.size(80.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.2f)), contentAlignment = Alignment.Center) {
@@ -264,7 +331,6 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        // کارت اطلاعات
         Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = surfaceColor), shape = RoundedCornerShape(12.dp)) {
             Column(modifier = Modifier.padding(16.dp)) {
                 
@@ -285,7 +351,11 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(stringResource(id = R.string.role_label), color = textColor.copy(alpha = 0.6f))
                     }
-                    val translatedRole = when (FakeData.currentUser.role) { "CEO" -> stringResource(id = R.string.role_ceo); "ADMIN" -> stringResource(id = R.string.role_admin); else -> stringResource(id = R.string.role_viewer) }
+                    val translatedRole = when (FakeData.currentUser.role) { 
+                        "CEO" -> stringResource(id = R.string.role_ceo)
+                        "ADMIN" -> stringResource(id = R.string.role_admin)
+                        else -> stringResource(id = R.string.role_viewer) 
+                    }
                     Text(translatedRole, fontWeight = FontWeight.Bold, color = primaryColor)
                 }
                 
@@ -306,41 +376,4 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Security, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text(stringResource(id = R.string.two_factor_label), color = textColor.copy(alpha = 0.6f))
-                            Text(stringResource(id = R.string.two_factor_desc), color = textColor.copy(alpha = 0.4f), fontSize = 10.sp)
-                        }
-                    }
-                    Switch(
-                        checked = is2FAEnabled,
-                        onCheckedChange = { 
-                            is2FAEnabled = it 
-                            FakeData.currentUser = FakeData.currentUser.copy(twoFactorEnabled = it)
-                        },
-                        colors = SwitchDefaults.colors(checkedThumbColor = primaryColor)
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (FakeData.currentUser.role == "VIEWER") {
-            Button(
-                onClick = { 
-                    if (!hasRequested) {
-                        hasRequested = true
-                        FakeData.currentUser = FakeData.currentUser.copy(hasRequestedAccess = true)
-                        
-                        // ✅ اضافه کردن لاگ جدید به لیست به صورت داینامیک
-                        FakeData.logs.add(0, AccessLog(
-                            id = UUID.randomUUID().toString(),
-                            actionRes = R.string.log_request_access,
-                            resourceName = "System",
-                            status = "PENDING",
-                            timestamp = "همین الان",
-                            type = "REQUEST"
-                        ))
-                    }
-                },
-                modifier = Modifier.fillMaxWidth().height(50.d
+                        Column
