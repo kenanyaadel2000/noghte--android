@@ -47,6 +47,12 @@
     <string name="two_factor_label">Two-Factor Auth</string>
     <string name="two_factor_desc">Enable / Disable</string>
     <string name="admin_tab">Admin</string>
+    <!-- Logs Filters -->
+    <string name="filter_all">All</string>
+    <string name="filter_auth">Login / Logout</string>
+    <string name="filter_requests">Requests</string>
+    <string name="request_sent_status">Pending Approval</string>
+    <string name="log_request_access">System Access Request</string>
     
     <!-- کلمات قبلی را نگه دار و این‌ها را اضافه کن -->
     <!-- Admin Panel -->
