@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">Noghte</string>
     <string name="login_subtitle">Secure Gateway</string>
+    <string name="login_button">Login to Noghte</string>
+    <string name="login_privacy_agree">View Terms &amp; Conditions</string>
     <string name="terms_title">Terms &amp; Conditions</string>
-    <string name="terms_text">Welcome to the Noghte Security Platform. Please read the following terms carefully before logging in:\n\n1. Your access to all resources and infrastructure services is fully monitored 24/7.\n2. Your credentials and tokens are stored using advanced, fully encrypted security standards.\n3. Any attempt for unauthorized access, reverse engineering, or abuse of privileges will be subject to legal prosecution.\n4. You agree not to share your organization\'s confidential information in insecure environments.\n\nBy clicking the back button and logging in, you declare your agreement to these terms.</string>
+    <string name="terms_text">Welcome to the Noghte Security Platform. Please read the following terms carefully before logging in:\n\n1. Your access to all resources and infrastructure services is fully monitored 24/7.\n2. Your credentials and tokens are stored using advanced, fully encrypted security standards.\n3. Any attempt for unauthorized access, reverse engineering, or abuse of privileges will be subject to legal prosecution.\n4. You agree not to share your organization\'s confidential information in insecure environments.\n5. The use of automated tools (like bots or scripts) for data extraction is strictly prohibited.\n6. If you notice any suspicious activity, you must report it immediately to the security team.\n7. You are responsible for keeping your personal device safe from malware.\n8. Any modifications or tampering with the client code will result in permanent access denial.\n9. The platform reserves the right to block access in case of violations, without prior notice.\n10. By continuing the login process, you confirm that you fully understand these terms.\n\nBy clicking the back button and logging in, you declare your agreement to these terms.</string>
     <string name="agree_checkbox">I accept the terms</string>
     <string name="back_button">Back</string>
     <string name="change_language">Change Language</string>
@@ -11,10 +13,18 @@
     <string name="tab_resources">Resources</string>
     <string name="tab_logs">Logs</string>
     <string name="tab_profile">Profile</string>
+    <string name="access_read">Read</string>
+    <string name="access_full">Full Access</string>
+    <string name="coming_soon">Coming soon...</string>
+    <string name="profile_name">Ali Mohammadi</string>
+    <string name="profile_email">ali.mohammadi@company.com</string>
+    <string name="profile_role_label">Role</string>
+    <string name="profile_role_value">viewer, analyst</string>
+    <string name="profile_org_label">Organization</string>
+    <string name="profile_org_value">Noghte Security</string>
     <string name="logout_button">Logout</string>
     <string name="email_label">Email</string>
     <string name="password_label">Password</string>
-    <string name="confirm_password_label">Confirm Password</string>
     <string name="name_label">Full Name</string>
     <string name="login_button_text">Login to Noghte</string>
     <string name="register_button_text">Register</string>
@@ -26,81 +36,16 @@
     <string name="terms_prefix">I accept the </string>
     <string name="terms_link">rules</string>
     <string name="terms_suffix"></string>
-         <!-- Resources & Details -->
-    <string name="res_admin_name">Admin Panel</string>
-    <string name="res_admin_desc">System management panel for admin users.</string>
-    <string name="res_db_name">Analytics DB</string>
-    <string name="res_db_desc">Analytical database for heavy reporting queries and big data processing.</string>
-    <string name="res_gpu_name">ML Training Server</string>
-    <string name="res_gpu_desc">Machine learning model training server with GPU.</string>
 
-<!-- Resource Details Info -->
-    <string name="required_role_label">Required Role:</string>
-    <string name="last_access_label">Last Access:</string>
-    <string name="status_label">Status:</string>
-    <string name="status_active">Active</string>
-    <string name="status_inactive">Inactive</string>
-    <string name="request_access_btn">Request Access</string>
-    <!-- Admin Panel Extra -->
-    <string name="search_users_placeholder">Search users...</string>
-    <string name="sort_by_name">Sort by Name</string>
-    <string name="sort_by_role">Sort by Role</string>
-    <string name="admin_login_log_action">Admin logged into panel</string>
-
-<!-- Profile & Admin -->
-    <string name="user_id_label">User ID</string>
-    <string name="two_factor_label">Two-Factor Auth</string>
-    <string name="two_factor_desc">Enable / Disable</string>
-    <string name="admin_tab">Admin</string>
-    <!-- Logs Filters -->
-    <string name="filter_all">All</string>
-    <string name="filter_auth">Login / Logout</string>
-    <string name="filter_requests">Requests</string>
-    <string name="request_sent_status">Pending Approval</string>
-    <string name="log_request_access">System Access Request</string>
-    
-    <!-- کلمات قبلی را نگه دار و این‌ها را اضافه کن -->
-    <!-- Admin Panel -->
-    <string name="admin_panel_title">Admin Panel</string>
-    <string name="admin_panel_button">Enter Admin Panel</string>
-    <string name="users_list_title">System Users List</string>
-    <string name="role_updated_success">User role updated successfully.</string>
-    <string name="role_update_error">Error updating user role.</string>
-    <string name="loading_users">Loading users list...</string>
-    <!-- Resource Names & Descriptions -->
-    <string name="res_fin_name">Financial API</string>
-    <string name="res_fin_desc">Access to the financial API for reporting and transactions. This API allows fetching financial reports, viewing transactions, and managing accounts.</string>
-    
-    <string name="res_admin_name">Admin Panel</string>
-    <string name="res_admin_desc">System management panel for admin users. This panel provides full access to system settings and user management.</string>
-    
-    <string name="res_db_name">Analytics DB</string>
-    <string name="res_db_desc">Analytical database for heavy reporting queries and big data processing.</string>
-    
-    <string name="res_gpu_name">GPU Cluster</string>
-    <string name="res_gpu_desc">Processing cluster for running AI models and training.</string>
-
-    <!-- Log Actions -->
-    <string name="log_login">System Login</string>
-    <string name="log_req_access">Access Request</string>
-    <string name="log_view_dash">View Dashboard</string>
-    <string name="log_run_job">Run Job</string>
-    <string name="log_logout">System Logout</string>
-
-
-    <!-- Error Messages -->
-    <string name="error_empty_fields">Please fill all fields.</string>
-    <string name="error_password_mismatch">Passwords do not match.</string>
     <string name="error_invalid_email">Invalid email format.</string>
     <string name="error_not_verified">Your account has not been approved by the admin yet. Please wait.</string>
     <string name="error_invalid_credentials">Invalid email or password.</string>
     <string name="error_user_exists">This email is already registered.</string>
+    <string name="error_empty_fields">Please fill all fields.</string>
     <string name="register_success_msg">Registration successful. Activated after admin approval.</string>
 
-    <!-- Zero Trust & Access Strings -->
     <string name="access_denied">Access Denied</string>
     <string name="access_admin">Admin Access</string>
-    <string name="access_full">Full Access (CEO)</string>
     <string name="no_access_message">You currently do not have access to any resources.</string>
     <string name="request_access_button">Request Access from Admin</string>
     <string name="no_resources_found">No resources found</string>
@@ -111,4 +56,48 @@
     <string name="org_label">Organization</string>
     <string name="org_value">Noghte Security</string>
     <string name="profile_email_placeholder">ali.mohammadi@company.com</string>
+
+    <string name="res_fin_name">Financial API</string>
+    <string name="res_fin_desc">Access to the financial API for reporting and transactions. This API allows fetching financial reports, viewing transactions, and managing accounts.</string>
+    <string name="res_admin_name">Admin Panel</string>
+    <string name="res_admin_desc">System management panel for admin users.</string>
+    <string name="res_db_name">Analytics DB</string>
+    <string name="res_db_desc">Analytical database for heavy reporting queries and big data processing.</string>
+    <string name="res_gpu_name">ML Training Server</string>
+    <string name="res_gpu_desc">Machine learning model training server with GPU.</string>
+
+    <string name="required_role_label">Required Role:</string>
+    <string name="last_access_label">Last Access:</string>
+    <string name="status_label">Status:</string>
+    <string name="status_active">Active</string>
+    <string name="status_inactive">Inactive</string>
+    <string name="request_access_btn">Request Access</string>
+
+    <string name="user_id_label">User ID</string>
+    <string name="two_factor_label">Two-Factor Auth</string>
+    <string name="two_factor_desc">Enable / Disable</string>
+    <string name="admin_tab">Admin</string>
+    
+    <string name="filter_all">All</string>
+    <string name="filter_auth">Login / Logout</string>
+    <string name="filter_requests">Requests</string>
+    <string name="request_sent_status">Pending Approval</string>
+    <string name="log_request_access">System Access Request</string>
+
+    <string name="admin_panel_title">Admin Panel</string>
+    <string name="admin_panel_button">Enter Admin Panel</string>
+    <string name="users_list_title">System Users List</string>
+    <string name="role_updated_success">User role updated successfully.</string>
+    <string name="role_update_error">Error updating user role.</string>
+    <string name="loading_users">Loading users list...</string>
+    <string name="search_users_placeholder">Search users...</string>
+    <string name="sort_by_name">Sort by Name</string>
+    <string name="sort_by_role">Sort by Role</string>
+    <string name="admin_login_log_action">Admin logged into panel</string>
+
+    <string name="log_login">System Login</string>
+    <string name="log_req_access">Access Request</string>
+    <string name="log_view_dash">View Dashboard</string>
+    <string name="log_run_job">Run Job</string>
+    <string name="log_logout">System Logout</string>
 </resources>
