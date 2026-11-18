@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -177,7 +178,13 @@ fun ResourceListScreen(
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             items(filteredResources) { resource ->
-                                ResourceCard(resource, primaryColor, surfaceColor, textColor, onClick = { onResourceClick(resource.id) })
+                                ResourceCard(
+                                    resource = resource,
+                                    primaryColor = primaryColor,
+                                    surfaceColor = surfaceColor,
+                                    textColor = textColor,
+                                    onClick = { onResourceClick(resource.id) }
+                                )
                             }
                         }
                     }
@@ -191,13 +198,22 @@ fun ResourceListScreen(
 }
 
 @Composable
-fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, textColor: Color, onClick: () -> Unit) {
+fun ResourceCard(
+    resource: Resource,
+    primaryColor: Color,
+    surfaceColor: Color,
+    textColor: Color,
+    onClick: () -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onClick() },
         colors = CardDefaults.cardColors(containerColor = surfaceColor),
         shape = RoundedCornerShape(12.dp)
     ) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             val icon = when (resource.type) {
                 "API" -> Icons.Default.Link
                 "WEB_APP" -> Icons.Default.Language
@@ -205,23 +221,40 @@ fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, t
                 else -> Icons.Default.Star
             }
             Box(
-                modifier = Modifier.size(40.dp).background(primaryColor.copy(alpha = 0.15f), RoundedCornerShape(8.dp)),
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(primaryColor.copy(alpha = 0.15f), RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(imageVector = icon, contentDescription = null, tint = primaryColor)
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(stringResource(id = resource.nameRes), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = textColor)
+                Text(
+                    stringResource(id = resource.nameRes),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = textColor
+                )
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(stringResource(id = resource.descRes), fontSize = 12.sp, color = textColor.copy(alpha = 0.6f), maxLines = 2)
+                Text(
+                    stringResource(id = resource.descRes),
+                    fontSize = 12.sp,
+                    color = textColor.copy(alpha = 0.6f),
+                    maxLines = 2
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 val (accessText, accessColor) = when (FakeData.currentUser.role) {
                     "CEO" -> Pair(stringResource(id = R.string.access_full), primaryColor)
                     "ADMIN", "MANAGER" -> Pair(stringResource(id = R.string.access_admin), primaryColor)
                     else -> Pair(stringResource(id = R.string.access_denied), Color.Red)
                 }
-                Text(accessText, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = accessColor)
+                Text(
+                    text = accessText,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = accessColor
+                )
             }
         }
     }
@@ -247,19 +280,28 @@ fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
                 selected = selectedFilter == "ALL",
                 onClick = { selectedFilter = "ALL" },
                 label = { Text(stringResource(id = R.string.filter_all), fontSize = 12.sp) },
-                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = primaryColor, selectedLabelColor = Color.White)
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = primaryColor,
+                    selectedLabelColor = Color.White
+                )
             )
             FilterChip(
                 selected = selectedFilter == "AUTH",
                 onClick = { selectedFilter = "AUTH" },
                 label = { Text(stringResource(id = R.string.filter_auth), fontSize = 12.sp) },
-                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = primaryColor, selectedLabelColor = Color.White)
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = primaryColor,
+                    selectedLabelColor = Color.White
+                )
             )
             FilterChip(
                 selected = selectedFilter == "REQUEST",
                 onClick = { selectedFilter = "REQUEST" },
                 label = { Text(stringResource(id = R.string.filter_requests), fontSize = 12.sp) },
-                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = primaryColor, selectedLabelColor = Color.White)
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = primaryColor,
+                    selectedLabelColor = Color.White
+                )
             )
         }
 
@@ -274,7 +316,10 @@ fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
                     colors = CardDefaults.cardColors(containerColor = surfaceColor),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         val isAllowed = log.status == "ALLOWED"
                         val isPending = log.status == "PENDING"
                         val statusColor = when {
@@ -288,12 +333,30 @@ fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
                             else -> Icons.Default.Cancel
                         }
 
-                        Icon(statusIcon, contentDescription = null, tint = statusColor, modifier = Modifier.size(24.dp))
+                        Icon(
+                            statusIcon,
+                            contentDescription = null,
+                            tint = statusColor,
+                            modifier = Modifier.size(24.dp)
+                        )
                         Spacer(modifier = Modifier.width(16.dp))
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(stringResource(id = log.actionRes), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = textColor)
-                            Text(log.resourceName, fontSize = 12.sp, color = textColor.copy(alpha = 0.6f))
-                            Text(log.timestamp, fontSize = 10.sp, color = textColor.copy(alpha = 0.4f))
+                            Text(
+                                stringResource(id = log.actionRes),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = textColor
+                            )
+                            Text(
+                                log.resourceName,
+                                fontSize = 12.sp,
+                                color = textColor.copy(alpha = 0.6f)
+                            )
+                            Text(
+                                log.timestamp,
+                                fontSize = 10.sp,
+                                color = textColor.copy(alpha = 0.4f)
+                            )
                         }
                     }
                 }
@@ -303,7 +366,12 @@ fun LogsTab(primaryColor: Color, surfaceColor: Color, textColor: Color) {
 }
 
 @Composable
-fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLogout: () -> Unit) {
+fun ProfileTab(
+    primaryColor: Color,
+    surfaceColor: Color,
+    textColor: Color,
+    onLogout: () -> Unit
+) {
     val scope = rememberCoroutineScope()
 
     var is2FAEnabled by remember { mutableStateOf(FakeData.currentUser.twoFactorEnabled) }
@@ -326,14 +394,31 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Box(
-                    modifier = Modifier.size(80.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.2f)),
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.2f)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Person, contentDescription = null, tint = Color.White, modifier = Modifier.size(50.dp))
+                    Icon(
+                        Icons.Default.Person,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(50.dp)
+                    )
                 }
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(FakeData.currentUser.name, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                Text(FakeData.currentUser.email, fontSize = 12.sp, color = Color.White.copy(alpha = 0.8f))
+                Text(
+                    FakeData.currentUser.name,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+                Text(
+                    FakeData.currentUser.email,
+                    fontSize = 12.sp,
+                    color = Color.White.copy(alpha = 0.8f)
+                )
             }
         }
 
@@ -352,53 +437,30 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Fingerprint, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
+                        Icon(
+                            Icons.Default.Fingerprint,
+                            contentDescription = null,
+                            tint = primaryColor,
+                            modifier = Modifier.size(20.dp)
+                        )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(id = R.string.user_id_label), color = textColor.copy(alpha = 0.6f))
+                        Text(
+                            stringResource(id = R.string.user_id_label),
+                            color = textColor.copy(alpha = 0.6f)
+                        )
                     }
-                    Text(FakeData.currentUser.id, fontWeight = FontWeight.Bold, color = textColor)
+                    Text(
+                        FakeData.currentUser.id,
+                        fontWeight = FontWeight.Bold,
+                        color = textColor
+                    )
                 }
 
-                Divider(modifier = Modifier.padding(vertical = 12.dp), color = textColor.copy(alpha = 0.1f))
+                Divider(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    color = textColor.copy(alpha = 0.1f)
+                )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Badge, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(id = R.string.role_label), color = textColor.copy(alpha = 0.6f))
-                    }
-                    val translatedRole = when (FakeData.currentUser.role) {
-                        "CEO" -> stringResource(id = R.string.role_ceo)
-                        "ADMIN" -> stringResource(id = R.string.role_admin)
-                        else -> stringResource(id = R.string.role_viewer)
-                    }
-                    Text(translatedRole, fontWeight = FontWeight.Bold, color = primaryColor)
-                }
-
-                Divider(modifier = Modifier.padding(vertical = 12.dp), color = textColor.copy(alpha = 0.1f))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Business, contentDescription = null, tint = primaryColor, modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(id = R.string.org_label), color = textColor.copy(alpha = 0.6f))
-                    }
-                    Text(stringResource(id = R.string.org_value), fontWeight = FontWeight.Bold, color = textColor)
-                }
-
-                Divider(modifier = Modifier.padding(vertical = 12.dp), color = textColor.copy(alpha = 0.1f))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVer
+                    horizontalArrange
