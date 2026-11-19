@@ -411,6 +411,9 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
                             timestamp = "همین الان",
                             type = "REQUEST"
                         ))
+                        else if (FakeData.currentUser.role == "VIEWER" && FakeData.currentUser.hasAccess) {
+                         Text("دسترسی شما توسط مدیریت تایید شده است.", color = Color(0xFF4CAF50), fontWeight = FontWeight.Bold)
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
