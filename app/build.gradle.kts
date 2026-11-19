@@ -15,7 +15,7 @@ android {
         versionName = "1.0.0"
     }
 
-    // ✅ تنظیمات امضا برای نسخه Release (استفاده از کلید پیش‌فرض برای پروژه دانشگاهی)
+    // ✅ تنظیمات امضا برای نسخه Release
     signingConfigs {
         create("release") {
             storeFile = file(System.getProperty("user.home") + "/.android/debug.keystore")
@@ -53,6 +53,10 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.compose.material:material-icons-extended")
-    implementation("io.appwrite:sdk-for-android:27.2.0")
+    
+    // ✅ نسخه پایدار و سازگار Appwrite
+    implementation("io.appwrite:sdk-for-android:5.0.0")
+    
+    // ✅ فیکس کردن مشکل OkHttp
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
