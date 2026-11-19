@@ -15,7 +15,6 @@ android {
         versionName = "1.0.0"
     }
 
-    // ✅ تنظیمات امضا برای نسخه Release
     signingConfigs {
         create("release") {
             storeFile = file(System.getProperty("user.home") + "/.android/debug.keystore")
@@ -53,15 +52,17 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.compose.material:material-icons-extended")
-    
-    // ✅ Appwrite SDK (نسخه پایدار)
-    implementation("io.appwrite:sdk-for-android:5.0.0")
-    
-    // ✅ OkHttp (بدون BOM)
+
+    // ✅ 关键修改：排除 Appwrite 自带的 okhttp-bom
+    implementation("io.appwrite:sdk-for-android:5.0.0") {
+        exclude(group = "com.squareup.okhttp3", module = "okhttp-bom")
+    }
+
+    // ✅ 手动添加 okhttp，版本与 Appwrite 兼容
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
 
-// 🪄 این بخش جادویی مشکل okhttp-bom رو حل می‌کنه
+// ✅ 再次强制指定 okhttp 版本，作为双保险
 configurations.all {
     resolutionStrategy {
         force("com.squareup.okhttp3:okhttp:4.12.0")
