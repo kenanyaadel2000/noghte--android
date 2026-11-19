@@ -12,7 +12,24 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
+    }
+
+    // ✅ تنظیمات امضا برای نسخه Release (استفاده از کلید پیش‌فرض برای پروژه دانشگاهی)
+    signingConfigs {
+        create("release") {
+            storeFile = file(System.getProperty("user.home") + "/.android/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
+        }
     }
 
     buildFeatures {
@@ -31,16 +48,11 @@ android {
 }
 
 dependencies {
-    // Jetpack Compose
     implementation(platform("androidx.compose:compose-bom:2024.02.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.compose.material:material-icons-extended")
-
-    // ✅ ارتقا به نسخه 5.1.0 که مشکل اوک‌اچ‌تی‌تی‌پی رو حل کرده
-    implementation("io.appwrite:sdk-for-android:5.1.0")
-
-    // OkHttp (برای اینکه خیالمون راحت باشه)
+    implementation("io.appwrite:sdk-for-android:5.0.1")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
