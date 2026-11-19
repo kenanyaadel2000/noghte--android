@@ -194,7 +194,19 @@ fun ResourceDetailScreen(resourceId: String, onBackClick: () -> Unit) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(stringResource(id = R.string.request_access_btn), fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
-                
+                // دکمه درخواست دسترسی (فقط برای ویوور)
+                if (FakeData.currentUser.role == "VIEWER") {
+                 Button(
+                  onClick = { /* TODO */ },
+                   modifier = Modifier.fillMaxWidth().height(50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor, contentColor = Color.White),
+                      shape = RoundedCornerShape(12.dp)
+                      ) {
+                        Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(id = R.string.request_access_btn), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+    }
+}
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
