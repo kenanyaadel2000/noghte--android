@@ -17,7 +17,7 @@
 - **توسعه و بیلد (CI/CD):** GitHub Actions 
 - **معماری:** Single Activity, State Hoisting, ViewModel
 
-## 🚀 ## 🚀 دانلود و نصب (Download & Install)
+## 🚀 دانلود و نصب (Download & Install)
 برای نصب این پروژه نیازی به کدنویسی یا Android Studio ندارید. 
 1. به بخش **Releases** در سمت راست همین صفحه گیت‌هاب بروید.
 2. آخرین نسخه (مثلاً `v1.0.0`) را باز کنید.
