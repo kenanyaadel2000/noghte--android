@@ -53,6 +53,6 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.compose.material:material-icons-extended")
-    implementation("io.appwrite:sdk-for-android:5.0.1")
+    implementation("io.appwrite:sdk-for-android:27.2.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
