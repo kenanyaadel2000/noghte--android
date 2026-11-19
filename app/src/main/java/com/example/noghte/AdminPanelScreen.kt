@@ -202,29 +202,24 @@ fun AdminUserCard(
     name: String,
     email: String,
     currentRole: String,
+    hasAccess: Boolean, // پارامتر جدید
     primaryColor: Color,
     surfaceColor: Color,
     textColor: Color,
-    onRoleChanged: (String) -> Unit
+    onRoleChanged: (String) -> Unit,
+    onAccessChanged: (Boolean) -> Unit // پارامتر جدید
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val roles = listOf("VIEWER", "ADMIN", "CEO")
+    
+    // CEO می‌تونه همه نقش‌ها رو بده، ادمین نمی‌تونه نقش بده
+    val roles = if (FakeData.currentUser.role == "CEO") listOf("VIEWER", "ADMIN", "CEO") else listOf(currentRole)
+    
+    // CEO می‌تونه دسترسی همه رو بده، ادمین فقط دسترسی ویوور رو
+    val canChangeAccess = FakeData.currentUser.role == "CEO" || (FakeData.currentUser.role == "ADMIN" && currentRole == "VIEWER")
 
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = surfaceColor),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(primaryColor.copy(alpha = 0.2f), RoundedCornerShape(8.dp)),
-                contentAlignment = Alignment.Center
-            ) {
+    Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = surfaceColor), shape = RoundedCornerShape(12.dp)) {
+        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(modifier = Modifier.size(40.dp).background(primaryColor.copy(alpha = 0.2f), RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
                 Icon(Icons.Default.Person, contentDescription = null, tint = primaryColor)
             }
             
@@ -233,33 +228,47 @@ fun AdminUserCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = name, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = textColor)
                 Text(text = email, fontSize = 12.sp, color = textColor.copy(alpha = 0.6f))
+                
+                // وضعیت دسترسی
+                Text(
+                    text = if (hasAccess) "دسترسی دارد" else "دسترسی ندارد",
+                    fontSize = 10.sp,
+                    color = if (hasAccess) Color(0xFF4CAF50) else Color.Red,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
             }
 
-            Box {
-                Button(
-                    onClick = { expanded = true },
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor.copy(alpha = 0.1f), contentColor = primaryColor),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                    modifier = Modifier.height(36.dp)
-                ) {
-                    Text(text = currentRole, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                }
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    roles.forEach { role ->
-                        DropdownMenuItem(
-                            text = { Text(role) },
-                            onClick = {
+            Column(horizontalAlignment = Alignment.End) {
+                // دکمه تغییر نقش (فقط برای CEO فعاله)
+                Box {
+                    Button(
+                        onClick = { if (FakeData.currentUser.role == "CEO") expanded = true },
+                        enabled = FakeData.currentUser.role == "CEO",
+                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor.copy(alpha = 0.1f), contentColor = primaryColor),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                        modifier = Modifier.height(32.dp)
+                    ) {
+                        Text(text = currentRole, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    }
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        roles.forEach { role ->
+                            DropdownMenuItem(text = { Text(role) }, onClick = {
                                 expanded = false
-                                if (role != currentRole) {
-                                    onRoleChanged(role)
-                                }
-                            }
-                        )
+                                if (role != currentRole) onRoleChanged(role)
+                            })
+                        }
                     }
                 }
+                
+                // سوییچ دسترسی (فقط اگر اجازه داشته باشه)
+                Switch(
+                    checked = hasAccess,
+                    onCheckedChange = { if (canChangeAccess) onAccessChanged(it) },
+                    enabled = canChangeAccess,
+                    modifier = Modifier.scale(0.7f), // کوچیک کردن سوییچ
+                    colors = SwitchDefaults.colors(checkedThumbColor = primaryColor)
+                )
             }
         }
     }
