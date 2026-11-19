@@ -54,9 +54,16 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.compose.material:material-icons-extended")
     
-    // ✅ نسخه پایدار و سازگار Appwrite
+    // ✅ Appwrite SDK (نسخه پایدار)
     implementation("io.appwrite:sdk-for-android:5.0.0")
     
-    // ✅ فیکس کردن مشکل OkHttp
+    // ✅ OkHttp (بدون BOM)
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+}
+
+// 🪄 این بخش جادویی مشکل okhttp-bom رو حل می‌کنه
+configurations.all {
+    resolutionStrategy {
+        force("com.squareup.okhttp3:okhttp:4.12.0")
+    }
 }
