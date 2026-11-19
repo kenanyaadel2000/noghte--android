@@ -2,14 +2,15 @@ package com.example.noghte
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.mutableStateListOf
-val hasAccess: Boolean = false
+
 data class User(
     val id: String,
     val name: String,
     val email: String,
     val role: String,
     val hasRequestedAccess: Boolean = false,
-    val twoFactorEnabled: Boolean = false
+    val twoFactorEnabled: Boolean = false,
+    val hasAccess: Boolean = false // ✅ اضافه شد
 )
 
 data class Resource(
@@ -27,9 +28,9 @@ data class AccessLog(
     val id: String,
     @StringRes val actionRes: Int,
     val resourceName: String,
-    val status: String, // ALLOWED, DENIED, PENDING
+    val status: String,
     val timestamp: String,
-    val type: String // LOGIN, LOGOUT, REQUEST, JOB
+    val type: String
 )
 
 object FakeData {
@@ -39,15 +40,16 @@ object FakeData {
         email = "ali.mohammadi@company.com", 
         role = "CEO",
         hasRequestedAccess = false,
-        twoFactorEnabled = true
+        twoFactorEnabled = true,
+        hasAccess = true // ✅ برای CEO
     )
 
     val users = mutableListOf(
-    currentUser.copy(hasAccess = true), // CEO
-    User("usr_2a4b6c8d", "رضا کریمی", "reza@company.com", "ADMIN", hasAccess = true),
-    User("usr_9e8d7c6b", "سارا احمدی", "sara@company.com", "VIEWER", hasRequestedAccess = true, hasAccess = false),
-    User("usr_1f2e3d4c", "محمد رضایی", "mohammad@company.com", "VIEWER", hasAccess = false)
-)
+        currentUser,
+        User("usr_2a4b6c8d", "رضا کریمی", "reza@company.com", "ADMIN", hasAccess = true), // ✅ برای ادمین
+        User("usr_9e8d7c6b", "سارا احمدی", "sara@company.com", "VIEWER", hasRequestedAccess = true, hasAccess = false), // ✅ برای ویوور
+        User("usr_1f2e3d4c", "محمد رضایی", "mohammad@company.com", "VIEWER", hasAccess = false) // ✅ برای ویوور
+    )
 
     val resources = listOf(
         Resource("1", R.string.res_fin_name, "API", R.string.res_fin_desc, "viewer", "۱۰:۳۰ - ۱۴۰۳/۰۵/۲۵", "ACTIVE", listOf("GET /api/v1/transactions", "GET /api/v1/accounts", "GET /api/v1/reports")),
@@ -56,7 +58,6 @@ object FakeData {
         Resource("4", R.string.res_gpu_name, "GPU", R.string.res_gpu_desc, "admin", "۰۸:۳۰ - ۱۴۰۳/۰۵/۲۴", "INACTIVE", listOf("POST /api/v1/jobs/train", "GET /api/v1/jobs/status"))
     )
 
-    // ✅ استفاده از mutableStateListOf برای اینکه بشه لاگ جدید اضافه کرد
     val logs = mutableStateListOf(
         AccessLog("1", R.string.log_login, "OIDC Login", "ALLOWED", "۱۰:۳۰ - ۱۴۰۳/۰۵/۲۵", "LOGIN"),
         AccessLog("2", R.string.log_req_access, "Financial API", "ALLOWED", "۱۰:۳۲ - ۱۴۰۳/۰۵/۲۵", "REQUEST"),
