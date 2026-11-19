@@ -217,12 +217,16 @@ fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, t
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(stringResource(id = resource.descRes), fontSize = 12.sp, color = textColor.copy(alpha = 0.6f), maxLines = 2)
                 Spacer(modifier = Modifier.height(8.dp))
+                
+                // منطق نمایش دسترسی در کارت
                 val (accessText, accessColor) = when {
-                FakeData.currentUser.role == "CEO" -> Pair(stringResource(id = R.string.access_full), primaryColor)
-                FakeData.currentUser.role == "ADMIN" -> Pair(stringResource(id = R.string.access_admin), primaryColor)
-                FakeData.currentUser.role == "VIEWER" && FakeData.currentUser.hasAccess -> Pair("دسترسی داده شد", Color(0xFF4CAF50))
-                else -> Pair(stringResource(id = R.string.access_denied), Color.Red)
-          }.   
+                    FakeData.currentUser.role == "CEO" -> Pair(stringResource(id = R.string.access_full), primaryColor)
+                    FakeData.currentUser.role == "ADMIN" -> Pair(stringResource(id = R.string.access_admin), primaryColor)
+                    FakeData.currentUser.role == "VIEWER" && FakeData.currentUser.hasAccess -> Pair("دسترسی داده شد", Color(0xFF4CAF50))
+                    else -> Pair(stringResource(id = R.string.access_denied), Color.Red)
+                }
+                Text(accessText, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = accessColor)
+            }
         }
     }
 }
@@ -396,40 +400,52 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // بخش درخواست دسترسی (فقط برای ویوور)
         if (FakeData.currentUser.role == "VIEWER") {
-            Button(
-                onClick = { 
-                    if (!hasRequested) {
-                        hasRequested = true
-                        FakeData.currentUser = FakeData.currentUser.copy(hasRequestedAccess = true)
-                        
-                        FakeData.logs.add(0, AccessLog(
-                            id = UUID.randomUUID().toString(),
-                            actionRes = R.string.log_request_access,
-                            resourceName = "System",
-                            status = "PENDING",
-                            timestamp = "همین الان",
-                            type = "REQUEST"
-                        ))
-                        else if (FakeData.currentUser.role == "VIEWER" && FakeData.currentUser.hasAccess) {
-                         Text("دسترسی شما توسط مدیریت تایید شده است.", color = Color(0xFF4CAF50), fontWeight = FontWeight.Bold)
-                        }
+            if (FakeData.currentUser.hasAccess) {
+                // اگر دسترسی داده شده
+                Card(
+                    modifier = Modifier.fillMaxWidth().height(50.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50).copy(alpha = 0.15f)),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("دسترسی شما تایید شده است", color = Color(0xFF4CAF50), fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
-                },
-                modifier = Modifier.fillMaxWidth().height(50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (hasRequested) Color.Gray else primaryColor, 
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(12.dp),
-                enabled = !hasRequested
-            ) {
-                Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = if (hasRequested) "درخواست ارسال شد" else stringResource(id = R.string.request_access_btn), 
-                    fontSize = 16.sp, fontWeight = FontWeight.Bold
-                )
+                }
+            } else {
+                // اگر هنوز دسترسی ندارد
+                Button(
+                    onClick = { 
+                        if (!hasRequested) {
+                            hasRequested = true
+                            FakeData.currentUser = FakeData.currentUser.copy(hasRequestedAccess = true)
+                            
+                            FakeData.logs.add(0, AccessLog(
+                                id = UUID.randomUUID().toString(),
+                                actionRes = R.string.log_request_access,
+                                resourceName = "System",
+                                status = "PENDING",
+                                timestamp = "همین الان",
+                                type = "REQUEST"
+                            ))
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth().height(50.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (hasRequested) Color.Gray else primaryColor, 
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !hasRequested
+                ) {
+                    Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = if (hasRequested) "درخواست ارسال شد (در انتظار تایید)" else stringResource(id = R.string.request_access_btn), 
+                        fontSize = 16.sp, fontWeight = FontWeight.Bold
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
