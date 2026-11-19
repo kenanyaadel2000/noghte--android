@@ -381,17 +381,17 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
                         }
                     }
                     Switch(
-                     checked = is2FAEnabled,
-                       onCheckedChange = { 
-                        is2FAEnabled = it 
-                         FakeData.currentUser = FakeData.currentUser.copy(twoFactorEnabled = it)
-                  },
-    // ✅ رنگ رو ملایم‌تر کردم
-                          colors = SwitchDefaults.colors(
-                           checkedThumbColor = primaryColor,
-                            checkedTrackColor = primaryColor.copy(alpha = 0.4f) // شفافیت رو کم کردم
+                        checked = is2FAEnabled,
+                        onCheckedChange = { 
+                            is2FAEnabled = it 
+                            FakeData.currentUser = FakeData.currentUser.copy(twoFactorEnabled = it)
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = primaryColor,
+                            checkedTrackColor = primaryColor.copy(alpha = 0.4f)
+                        )
                     )
-                 )
+                }
             }
         }
 
@@ -456,5 +456,5 @@ fun ProfileTab(primaryColor: Color, surfaceColor: Color, textColor: Color, onLog
         }
         
         Spacer(modifier = Modifier.height(16.dp))
-    } 
-} 
+    }
+}
