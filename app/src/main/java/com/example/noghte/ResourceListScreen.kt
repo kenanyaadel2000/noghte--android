@@ -217,13 +217,12 @@ fun ResourceCard(resource: Resource, primaryColor: Color, surfaceColor: Color, t
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(stringResource(id = resource.descRes), fontSize = 12.sp, color = textColor.copy(alpha = 0.6f), maxLines = 2)
                 Spacer(modifier = Modifier.height(8.dp))
-                val (accessText, accessColor) = when (FakeData.currentUser.role) { 
-                    "CEO" -> Pair(stringResource(id = R.string.access_full), primaryColor)
-                    "ADMIN", "MANAGER" -> Pair(stringResource(id = R.string.access_admin), primaryColor)
-                    else -> Pair(stringResource(id = R.string.access_denied), Color.Red) 
-                }
-                Text(accessText, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = accessColor)
-            }
+                val (accessText, accessColor) = when {
+                FakeData.currentUser.role == "CEO" -> Pair(stringResource(id = R.string.access_full), primaryColor)
+                FakeData.currentUser.role == "ADMIN" -> Pair(stringResource(id = R.string.access_admin), primaryColor)
+                FakeData.currentUser.role == "VIEWER" && FakeData.currentUser.hasAccess -> Pair("دسترسی داده شد", Color(0xFF4CAF50))
+                else -> Pair(stringResource(id = R.string.access_denied), Color.Red)
+          }.   
         }
     }
 }
