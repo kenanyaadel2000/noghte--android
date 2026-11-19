@@ -178,20 +178,32 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
                                 }
                             },
                             onAccessChanged = { newAccess ->
-                                scope.launch {
-                                    try {
-                                        withContext(Dispatchers.IO) {
-                                            AppwriteClient.databases.updateDocument(
-                                                databaseId = AppwriteClient.DATABASE_ID,
-                                                collectionId = AppwriteClient.TABLE_ID,
-                                                documentId = docId,
-                                                data = mapOf("hasAccess" to newAccess)
-                                            )
-                                        }
-                                        fetchUsers()
-                                    } catch (e: Exception) {}
+                             // ۱. آپدیت دیتابیس Appwrite (اگر ستون رو ساخته باشی)
+                             scope.launch {
+                              try {
+                                withContext(Dispatchers.IO) {
+                                AppwriteClient.databases.updateDocument(
+                                databaseId = AppwriteClient.DATABASE_ID,
+                                collectionId = AppwriteClient.TABLE_ID,
+                                documentId = docId,
+                                data = mapOf("hasAccess" to newAccess)
+                                )
                                 }
-                            } // ✅ پاس داده شد
+                                } catch (e: Exception) {
+            // اگر ستون در Appwrite نبود، ارور رو نادیده بگیر
+        }
+    }
+    
+    // ۲. آپدیت لیست محلی برای اینکه UI فوراً تغییر کنه
+    val updatedList = usersList.map { user ->
+        if (user["\$id"] == docId) {
+            user.toMutableMap().apply { this["hasAccess"] = newAccess }
+        } else {
+            user
+        }
+    }
+    usersList = updatedList
+}
                         )
                     }
                 }
