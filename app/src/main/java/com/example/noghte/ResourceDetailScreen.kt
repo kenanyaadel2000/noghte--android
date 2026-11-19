@@ -194,21 +194,36 @@ fun ResourceDetailScreen(resourceId: String, onBackClick: () -> Unit) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(stringResource(id = R.string.request_access_btn), fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
-                // دکمه درخواست دسترسی (فقط برای ویوور)
-                if (FakeData.currentUser.role == "VIEWER") {
-                 Button(
-                  onClick = { /* TODO */ },
-                   modifier = Modifier.fillMaxWidth().height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor, contentColor = Color.White),
-                      shape = RoundedCornerShape(12.dp)
-                      ) {
-                        Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(id = R.string.request_access_btn), fontSize = 16.sp, fontWeight = FontWeight.Bold)
-    }
-}
-                Spacer(modifier = Modifier.height(16.dp))
+                // ✅ دکمه یا متن وضعیت دسترسی
+if (FakeData.currentUser.role == "VIEWER") {
+    if (FakeData.currentUser.hasAccess) {
+        // اگر دسترسی داده شده بود
+        Card(
+            modifier = Modifier.fillMaxWidth().height(50.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50).copy(alpha = 0.2f)),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("دسترسی داده شد (تایید شده)", color = Color(0xFF4CAF50), fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
         }
+    } else {
+        // اگر هنوز درخواست نداده یا تایید نشده
+        Button(
+            onClick = { /* منطق درخواست */ },
+            modifier = Modifier.fillMaxWidth().height(50.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = primaryColor, contentColor = Color.White),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(stringResource(id = R.string.request_access_btn), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        }
     }
+} else if (FakeData.currentUser.role == "ADMIN") {
+    Text("دسترسی ادمین (تایید شده)", color = primaryColor, fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 16.dp))
+} else if (FakeData.currentUser.role == "CEO") {
+    Text("دسترسی کامل (مدیرعامل)", color = primaryColor, fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 16.dp))
 }
+        }
+    
