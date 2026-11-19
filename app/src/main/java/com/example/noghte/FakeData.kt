@@ -2,7 +2,7 @@ package com.example.noghte
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.mutableStateListOf
-
+val hasAccess: Boolean = false
 data class User(
     val id: String,
     val name: String,
