@@ -43,11 +43,11 @@ object FakeData {
     )
 
     val users = mutableListOf(
-        currentUser,
-        User("usr_2a4b6c8d", "رضا کریمی", "reza@company.com", "ADMIN"),
-        User("usr_9e8d7c6b", "سارا احمدی", "sara@company.com", "VIEWER", hasRequestedAccess = true),
-        User("usr_1f2e3d4c", "محمد رضایی", "mohammad@company.com", "VIEWER")
-    )
+    currentUser.copy(hasAccess = true), // CEO
+    User("usr_2a4b6c8d", "رضا کریمی", "reza@company.com", "ADMIN", hasAccess = true),
+    User("usr_9e8d7c6b", "سارا احمدی", "sara@company.com", "VIEWER", hasRequestedAccess = true, hasAccess = false),
+    User("usr_1f2e3d4c", "محمد رضایی", "mohammad@company.com", "VIEWER", hasAccess = false)
+)
 
     val resources = listOf(
         Resource("1", R.string.res_fin_name, "API", R.string.res_fin_desc, "viewer", "۱۰:۳۰ - ۱۴۰۳/۰۵/۲۵", "ACTIVE", listOf("GET /api/v1/transactions", "GET /api/v1/accounts", "GET /api/v1/reports")),
