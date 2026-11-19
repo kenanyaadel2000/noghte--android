@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale // ✅ اضافه شد
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,13 +34,11 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     
-    // وضعیت‌های جستجو و مرتب‌سازی
     var searchQuery by remember { mutableStateOf("") }
-    var sortByRole by remember { mutableStateOf(false) } // false = Name, true = Role
+    var sortByRole by remember { mutableStateOf(false) }
     
     val scope = rememberCoroutineScope()
 
-    // تابع برای دریافت لیست کاربران
     fun fetchUsers() {
         scope.launch {
             isLoading = true
@@ -59,7 +58,6 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
         }
     }
 
-    // ثبت لاگ هنگام ورود ادمین به پنل (فقط یک بار)
     LaunchedEffect(Unit) {
         fetchUsers()
         FakeData.logs.add(0, AccessLog(
@@ -72,7 +70,6 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
         ))
     }
 
-    // فیلتر و مرتب‌سازی کاربران
     val filteredAndSortedUsers = usersList
         .filter { 
             it["name"].toString().contains(searchQuery, ignoreCase = true) || 
@@ -97,16 +94,12 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
         }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-            
-            // نوار جستجو
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
                 placeholder = { Text(stringResource(id = R.string.search_users_placeholder), fontSize = 14.sp) },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = primaryColor) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = primaryColor,
                     unfocusedBorderColor = textColor.copy(alpha = 0.3f),
@@ -116,11 +109,8 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
                 singleLine = true
             )
 
-            // دکمه‌های مرتب‌سازی
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 FilterChip(
@@ -139,7 +129,6 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // لیست کاربران
             if (isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = primaryColor)
@@ -163,11 +152,13 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
                         val email = userData["email"]?.toString() ?: "No Email"
                         val currentRole = userData["role"]?.toString() ?: "VIEWER"
                         val docId = userData["\$id"]?.toString() ?: ""
+                        val hasAccess = userData["hasAccess"] as? Boolean ?: false // ✅ استخراج وضعیت دسترسی
 
                         AdminUserCard(
                             name = name,
                             email = email,
                             currentRole = currentRole,
+                            hasAccess = hasAccess, // ✅ پاس داده شد
                             primaryColor = primaryColor,
                             surfaceColor = surfaceColor,
                             textColor = textColor,
@@ -182,12 +173,25 @@ fun AdminPanelScreen(onBackClick: () -> Unit) {
                                                 data = mapOf("role" to newRole)
                                             )
                                         }
-                                        fetchUsers() // بروزرسانی لیست بعد از تغییر
-                                    } catch (e: Exception) {
-                                        // مدیریت خطا
-                                    }
+                                        fetchUsers()
+                                    } catch (e: Exception) {}
                                 }
-                            }
+                            },
+                            onAccessChanged = { newAccess ->
+                                scope.launch {
+                                    try {
+                                        withContext(Dispatchers.IO) {
+                                            AppwriteClient.databases.updateDocument(
+                                                databaseId = AppwriteClient.DATABASE_ID,
+                                                collectionId = AppwriteClient.TABLE_ID,
+                                                documentId = docId,
+                                                data = mapOf("hasAccess" to newAccess)
+                                            )
+                                        }
+                                        fetchUsers()
+                                    } catch (e: Exception) {}
+                                }
+                            } // ✅ پاس داده شد
                         )
                     }
                 }
@@ -202,19 +206,16 @@ fun AdminUserCard(
     name: String,
     email: String,
     currentRole: String,
-    hasAccess: Boolean, // پارامتر جدید
+    hasAccess: Boolean,
     primaryColor: Color,
     surfaceColor: Color,
     textColor: Color,
     onRoleChanged: (String) -> Unit,
-    onAccessChanged: (Boolean) -> Unit // پارامتر جدید
+    onAccessChanged: (Boolean) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     
-    // CEO می‌تونه همه نقش‌ها رو بده، ادمین نمی‌تونه نقش بده
     val roles = if (FakeData.currentUser.role == "CEO") listOf("VIEWER", "ADMIN", "CEO") else listOf(currentRole)
-    
-    // CEO می‌تونه دسترسی همه رو بده، ادمین فقط دسترسی ویوور رو
     val canChangeAccess = FakeData.currentUser.role == "CEO" || (FakeData.currentUser.role == "ADMIN" && currentRole == "VIEWER")
 
     Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = surfaceColor), shape = RoundedCornerShape(12.dp)) {
@@ -229,7 +230,6 @@ fun AdminUserCard(
                 Text(text = name, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = textColor)
                 Text(text = email, fontSize = 12.sp, color = textColor.copy(alpha = 0.6f))
                 
-                // وضعیت دسترسی
                 Text(
                     text = if (hasAccess) "دسترسی دارد" else "دسترسی ندارد",
                     fontSize = 10.sp,
@@ -240,7 +240,6 @@ fun AdminUserCard(
             }
 
             Column(horizontalAlignment = Alignment.End) {
-                // دکمه تغییر نقش (فقط برای CEO فعاله)
                 Box {
                     Button(
                         onClick = { if (FakeData.currentUser.role == "CEO") expanded = true },
@@ -261,12 +260,11 @@ fun AdminUserCard(
                     }
                 }
                 
-                // سوییچ دسترسی (فقط اگر اجازه داشته باشه)
                 Switch(
                     checked = hasAccess,
                     onCheckedChange = { if (canChangeAccess) onAccessChanged(it) },
                     enabled = canChangeAccess,
-                    modifier = Modifier.scale(0.7f), // کوچیک کردن سوییچ
+                    modifier = Modifier.scale(0.7f),
                     colors = SwitchDefaults.colors(checkedThumbColor = primaryColor)
                 )
             }
